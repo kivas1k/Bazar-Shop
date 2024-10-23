@@ -1,0 +1,121 @@
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+}
+
+.header-banner {
+    background-color: #100f0f; /* Яркий цвет фона баннера */
+    color: #ffffff; /* Цвет текста */
+    text-align: center;
+    padding: 10px 0;
+    font-weight: bold;
+    position: relative;
+}
+
+header {
+    background-color: #ffffff; /* Белый цвет фона шапки */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Тень под шапкой */
+    padding: 10px 0;
+}
+
+.container {
+    display: flex;
+    max-width: 1700px; /* Максимальная ширина контейнера */
+    padding: 0 20px; /* Внутренние отступы от краев */
+    justify-content: space-between; /* Элементы делятся по краям */
+}
+
+.logo-container {
+    display: flex;
+    align-items: center; /* Центрируем элементы по вертикали */
+    margin-right: 20px; /* Расстояние между логотипом и навигацией */
+}
+
+.logo {
+    font-size: 28px; /* Размер шрифта для названия магазина */
+    font-weight: bold;
+    text-decoration: none;
+    color: #333;
+    display: flex;
+    align-items: center; /* Центрируем элементы по вертикали */
+}
+
+.logo-image {
+    width: 80px; /* Ширина логотипа */
+    height: auto; /* Автоматическая высота для сохранения пропорций */
+    margin-right: 10px; /* Отступ между логотипом и текстом */
+}
+
+nav {
+    margin-left: 80px; /* Добавляем отступ между логотипом и навигацией */
+}
+
+nav ul {
+    list-style: none; /* Убираем маркеры списка */
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+nav li {
+    margin-right: 20px; /* Отступ между пунктами */
+}
+
+nav a {
+    text-decoration: none;
+    color: #333; /* Цвет ссылок */
+    transition: color 0.3s ease; /* Плавный переход при наведении */
+}
+
+nav a:hover {
+    color: #ff6600; /* Цвет при наведении */
+}
+
+.header-right {
+    display: flex;
+    align-items: center; /* Центрируем элементы по вертикали */
+    margin-left: auto; /* Отодвигаем элементы вправо */
+}
+
+.search-form {
+    margin-right: 20px; /* Отступ между формой и иконками */
+}
+
+.search-form input {
+    padding: 8px;
+    border: 1px solid #ccc; /* Цвет рамки */
+    border-radius: 4px; /* Скругленные углы */
+}
+
+.search-form button {
+    padding: 8px 12px;
+    background-color: #333; /* Цвет фона кнопки */
+    color: white; /* Цвет текста кнопки */
+    border: none; /* Убираем рамку */
+    border-radius: 4px; /* Скругленные углы */
+    cursor: pointer; /* Курсор при наведении */
+    transition: background-color 0.3s ease; /* Плавный переход */
+}
+
+.search-form button:hover {
+    background-color: #555; /* Цвет кнопки при наведении */
+}
+
+.profile, .cart {
+    margin-left: 10px; /* Отступ между иконками */
+    text-decoration: none;
+    color: #333; /* Цвет текста */
+    display: flex; /* Блочное выравнивание */
+    align-items: center; /* Центрируем иконки по вертикали */
+}
+
+.profile:hover, .cart:hover {
+    color: #ff6600; /* Цвет текста при наведении */
+}
+
+.icon {
+    width: 25px; /* Размер иконок */
+    height: 25px; /* Размер иконок */
+    margin-right: 5px; /* Отступ между иконкой и текстом */
+}
