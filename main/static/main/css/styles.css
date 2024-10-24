@@ -21,7 +21,7 @@ header {
 
 .container {
     display: flex;
-    max-width: 1700px; /* Максимальная ширина контейнера */
+    max-width: 50000px; /* Максимальная ширина контейнера */
     padding: 0 20px; /* Внутренние отступы от краев */
     justify-content: space-between; /* Элементы делятся по краям */
 }
