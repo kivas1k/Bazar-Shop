@@ -7,5 +7,3 @@ urlpatterns = [
     path('cat/<int:cat_id>', views.categories, name='cat_id'),  # Каталог
     path('cat/<slug:cat_slug>', views.categories_by_slug, name='cat'),  # Каталог
 ]
-
-

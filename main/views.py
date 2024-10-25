@@ -26,4 +26,3 @@ def categories_by_slug(request, cat_slug):
 
 def page_not_found(request, exception):
     return HttpResponseNotFound("<h1>нету тут ниче</h1>")
-
