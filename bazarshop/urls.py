@@ -6,7 +6,9 @@ from main.views import page_not_found
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('main.urls')),  # Главная страница
-]
 
-handler404 = page_not_found
+    path('orders/', include('orders.urls')),
+    path('users/', include('users.urls')),
+
+    path('', include('main.urls')),
+]
