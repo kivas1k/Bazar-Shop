@@ -16,33 +16,26 @@
                     <img src="{% static 'main/images/logo.png' %}" alt="Логотип BAZARSHOP" class="logo-image">
                     BAZARSHOP
                 </a>
-                <nav>
-                    <ul>
-                        <li><a href="{% url 'about' %}">О нас</a></li>
-                        <li><a href="#">БЛОГ</a></li>
-                        <li><a href="#">Мужчинам</a></li>
-                        <li><a href="#">Женщинам</a></li>
-                    </ul>
-                </nav>
             </div>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'about' %}">О нас</a></li>
+                    <li><a href="#">БЛОГ</a></li>
+                    <li><a href="#">Мужчинам</a></li>
+                    <li><a href="#">Женщинам</a></li>
+                </ul>
+            </nav>
             <div class="header-right">
-                <form class="search-form">
-                    <input type="text" placeholder="Поиск...">
-                    <button type="submit">Поиск</button>
-                </form>
-                <a href="#" class="profile">
-                    <img src="{% static 'main/images/user.png' %}" alt="Профиль" class="icon"> Личный кабинет
+                <a href="{% url 'register' %}" class="btn">Регистрация</a>
+                <a href="{% url 'login' %}" class="btn">Войти</a>
+                <a href="{% url 'logout' %}" class="btn">Выйти</a>
+                <a href="{% url 'profile' %}" class="profile">
+                    <img src="{% static 'main/images/user.png' %}" alt="Личный кабинет" class="icon">
                 </a>
-                <a href="#" class="cart">
-                    <img src="{% static 'main/images/korzina.png' %}" alt="Корзина" class="icon"> Корзина
+                <a href="{% url 'cart' %}" class="cart">
+                    <img src="{% static 'main/images/korzina.png' %}" alt="Корзина" class="icon">
                 </a>
             </div>
-        </div>
-
-        <!-- Новая секция для кнопок регистрации и входа -->
-        <div class="auth-buttons">
-            <a href="{% url 'register' %}" class="btn">Регистрация</a>
-            <a href="{% url 'login' %}" class="btn">Вход</a>
         </div>
     </header>
 </body>

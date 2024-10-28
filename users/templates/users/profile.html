@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="profile-container">
+    <h1>{{ title }}</h1>
+    <p>Добро пожаловать, {{ user.username }}!</p>
+
+    <div class="profile-details">
+        <p><strong>Имя пользователя:</strong> {{ user.username }}</p>
+        <p><strong>Электронная почта:</strong> {{ user.email }}</p>
+    </div>
+
+    <div class="profile-actions">
+        <a href="{% url 'logout' %}" class="btn">Выйти</a>
+        <a href="{% url 'profile_edit' %}" class="btn">Редактировать профиль</a>
+    </div>
+</div>
+{% endblock %}
