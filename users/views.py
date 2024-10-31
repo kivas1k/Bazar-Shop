@@ -2,15 +2,15 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from .forms import UserRegistrationForm
 
-menu = ["О нас", "Каталог", "Войти"]  # Общая переменная для меню
+menu = ["О нас", "Каталог", "Блог", "Акции", "Отзывы", "Контакты", "Войти"]
 
 def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # автоматический вход после регистрации
-            return redirect('home')  # перенаправляем на главную страницу
+            login(request, user)
+            return redirect('home')
     else:
         form = UserRegistrationForm()
     return render(request, 'users/register.html', {'form': form, 'menu': menu})
@@ -19,6 +19,11 @@ def profile_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
     return render(request, 'users/profile.html', {'title': 'Профиль', 'menu': menu})
+
+def profile_edit(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    return render(request, 'users/profile_edit.html', {'title': 'Редактирование профиля', 'menu': menu})
 
 def login_view(request):
     if request.method == 'POST':
@@ -35,8 +40,3 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('home')
-
-
-def profile_edit_view(request):
-
-    return render(request, 'users/profile_edit.html', {'title': 'Редактирование профиля'})

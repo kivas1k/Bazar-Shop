@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+<ul>
+    {% for sale in sales %}
+        <li>
+            <a href="{% url 'sale_detail' sale_id=sale.id %}">{{ sale.title }}</a> - {{ sale.discount }}% off
+        </li>
+    {% empty %}
+        <li>Акции пока отсутствуют.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

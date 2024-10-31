@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+<ul>
+    {% for review in reviews %}
+        <li>{{ review.text }} - <strong>{{ review.author }}</strong></li>
+    {% empty %}
+        <li>Отзывы пока отсутствуют.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
