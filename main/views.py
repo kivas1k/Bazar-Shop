@@ -17,22 +17,25 @@ def about(request):
 def catalog(request):
     # Список всех категорий для каталога
     categories = Category.objects.all()
-    return render(request, 'main/catalog.html', {'title': 'Каталог товаров', 'menu': menu, 'categories': categories})
-
-def category_detail(request, cat_id):
-    # Страница категории товаров, где `cat_id` указывает на ID категории
-    category = get_object_or_404(Category, id=cat_id)
-    products = category.products.all()  # Получение всех товаров в этой категории
-    return render(request, 'main/category_detail.html', {
-        'title': f"Категория: {category.name}",
+    return render(request, 'main/catalog.html', {
+        'title': 'Каталог товаров',
         'menu': menu,
-        'category': category,
-        'products': products
+        'categories': categories
     })
 
-def product_detail(request, cat_id):
-    # Страница товара, где `cat_id` указывает на ID товара
-    product = get_object_or_404(Product, id=cat_id)
+def category_detail(request, custom_id):
+    category = get_object_or_404(Category, custom_id=custom_id)
+    products = category.products.all()  # Получаем все продукты из категории
+    return render(request, 'main/category_detail.html', {
+        'category': category,
+        'products': products,
+        'title': category.name,
+        'menu': menu
+    })
+
+def product_detail(request, custom_id):
+    # Страница товара, где `custom_id` указывает на кастомный ID товара
+    product = get_object_or_404(Product, custom_id=custom_id)
     return render(request, 'main/product_detail.html', {
         'title': f"Товар: {product.name}",
         'menu': menu,
@@ -49,7 +52,7 @@ def contacts(request):
     return render(request, 'main/contacts.html', {'title': 'Контакты', 'menu': menu})
 
 def search_view(request):
-    query = request.GET.get('query', '')
+    query = request.GET.get('query', '')  # Получаем запрос из URL
     results = Product.objects.filter(name__icontains=query)  # Простой поиск по названию товара
     return render(request, 'main/search_results.html', {
         'query': query,

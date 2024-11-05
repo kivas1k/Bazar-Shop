@@ -8,6 +8,14 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'category')
-    search_fields = ('name', 'category__name')
-    list_filter = ('category',)
+    list_display = ('name', 'price', 'category', 'description', 'picture')  # Отображаем все данные
+    search_fields = ('name', 'category__name', 'description')
+    list_filter = (
+        'category',                         # Фильтр по категории
+        'price',                            # Фильтр по цене
+    )
+    list_editable = ('price', 'category', 'description', 'picture')  # Поля, редактируемые в списке
+    list_display_links = ('name',)  # Указываем, что поле 'name' будет кликабельным
+
+    # Настраиваем поля для детальной страницы редактирования товара
+    fields = ('name', 'description', 'price', 'picture', 'category')  # Указываем все поля для редактирования

@@ -1,12 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>{{ title }}</h1>
-<ul>
-    {% for category in categories %}
-        <li><a href="{% url 'category_detail' cat_id=category.id %}">{{ category.name }}</a></li>
-    {% empty %}
-        <li>Категории пока отсутствуют.</li>
-    {% endfor %}
-</ul>
+    <h1>{{ title }}</h1>
+    <ul>
+        {% for category in categories %}
+            <li>
+                <a href="{% url 'category_detail' custom_id=category.custom_id %}">{{ category.name }}</a>
+                <div class="category-detail">
+                    <img src="{{ category.pic_cat.url }}" alt="{{ category.name }}" style="max-width: 100%; height: auto;">
+                    <p>{{ category.description }}</p>
+                </div>
+            </li>
+        {% empty %}
+            <li>Категории пока отсутствуют.</li>
+        {% endfor %}
+    </ul>
 {% endblock %}

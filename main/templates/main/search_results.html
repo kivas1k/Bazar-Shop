@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Результаты поиска для "{{ query }}"</h1>
+
+    {% if results %}
+        <ul>
+            {% for product in results %}
+                <li>
+                    <a href="{% url 'product_detail' cat_id=product.id %}">{{ product.name }}</a>
+                    <p>Цена: {{ product.price }} ₽</p>
+                    <p>{{ product.description|truncatewords:10 }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>По вашему запросу ничего не найдено.</p>
+    {% endif %}
+{% endblock %}
