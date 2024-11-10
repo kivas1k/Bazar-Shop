@@ -20,18 +20,21 @@
             <nav>
                 <ul>
                     <li><a href="{% url 'about' %}">О нас</a></li>
-                    <li><a href="#">БЛОГ</a></li>
+                    <li><a href="{% url 'blog_home' %}">БЛОГ</a></li>
                     <li><a href="#">Мужчинам</a></li>
                     <li><a href="#">Женщинам</a></li>
                 </ul>
             </nav>
             <div class="header-right">
-                <a href="{% url 'register' %}" class="btn">Регистрация</a>
-                <a href="{% url 'login' %}" class="btn">Войти</a>
-                <a href="{% url 'logout' %}" class="btn">Выйти</a>
-                <a href="{% url 'profile' %}" class="profile">
-                    <img src="{% static 'main/images/user.png' %}" alt="Личный кабинет" class="icon">
-                </a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}" class="btn">Выйти</a>
+                    <a href="{% url 'profile' %}" class="profile">
+                        <img src="{% static 'main/images/user.png' %}" alt="Личный кабинет" class="icon">
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn">Войти</a>
+                    <a href="{% url 'register' %}" class="btn">Регистрация</a>
+                {% endif %}
                 <a href="{% url 'cart' %}" class="cart">
                     <img src="{% static 'main/images/korzina.png' %}" alt="Корзина" class="icon">
                 </a>

@@ -1,18 +1,16 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
-<div class="profile-container">
-    <h1>{{ title }}</h1>
-    <p>Добро пожаловать, {{ user.username }}!</p>
+  <h2>Профиль пользователя</h2>
+  <p><strong>Имя пользователя:</strong> {{ user.username }}</p>
+  <p><strong>О себе:</strong> {{ user_profile.bio }}</p>
+  <p><strong>Комментарии:</strong> {{ user_profile.user_comment }}</p>
 
-    <div class="profile-details">
-        <p><strong>Имя пользователя:</strong> {{ user.username }}</p>
-        <p><strong>Электронная почта:</strong> {{ user.email }}</p>
-    </div>
+  {% if user_profile.avatar %}
+    <img src="{{ user_profile.avatar.url }}" alt="Avatar" width="100">
+  {% else %}
+    <p>Аватар не установлен.</p>
+  {% endif %}
 
-    <div class="profile-actions">
-        <a href="{% url 'logout' %}" class="btn">Выйти</a>
-        <a href="{% url 'profile_edit' %}" class="btn">Редактировать профиль</a>
-    </div>
-</div>
+  <a href="{% url 'profile_edit' %}">Редактировать профиль</a>
 {% endblock %}

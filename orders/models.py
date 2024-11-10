@@ -20,6 +20,7 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     is_completed = models.BooleanField(default=False)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=255, default="Pending")  # Для отслеживания статуса заказа
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')

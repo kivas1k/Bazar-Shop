@@ -1,11 +1,10 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<h1>{{ title }}</h1>
-<p>Контактная информация:</p>
-<ul>
-    <li>Телефон: +7 (999) 999-99-99</li>
-    <li>Email: info@example.com</li>
-    <li>Адрес: г. Москва, ул. Пушкино, д. 1</li>
-</ul>
+    <h1>{{ title }}</h1>
+    <p>Свяжитесь с нами через форму ниже или по телефону:</p>
+    <p>Телефон: +7 123 456 78 90</p>
+    <p>Email: support@shop.ru</p>
 {% endblock %}

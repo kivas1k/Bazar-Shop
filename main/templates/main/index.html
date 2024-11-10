@@ -3,19 +3,12 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-    <main>
-        <h1>{{ title }}</h1>
-
-        <section class="featured-products">
-
-        </section>
-
-        <section class="new-arrivals">
-
-        </section>
-
-        <section class="popular-categories">
-
-        </section>
-    </main>
+    <h1>{{ title }}</h1>
+    <p>Добро пожаловать в наш магазин одежды!</p>
+    {% if user.is_authenticated and user.is_staff %}
+        <div class="admin-actions">
+            <a href="{% url 'add_category' %}" class="btn btn-primary">Добавить категорию</a>
+            <a href="{% url 'add_product' %}" class="btn btn-primary">Добавить товар</a>
+        </div>
+    {% endif %}
 {% endblock %}

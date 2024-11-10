@@ -1,21 +1,21 @@
 from django.contrib import admin
-from .models import Category, Product
+from .models import Category, Product, ProductRating
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description')
+    list_display = ('name', 'custom_id', 'parent')
     search_fields = ('name',)
+    list_filter = ('parent',)
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'category', 'description', 'picture')  # Отображаем все данные
-    search_fields = ('name', 'category__name', 'description')
-    list_filter = (
-        'category',                         # Фильтр по категории
-        'price',                            # Фильтр по цене
-    )
-    list_editable = ('price', 'category', 'description', 'picture')  # Поля, редактируемые в списке
-    list_display_links = ('name',)  # Указываем, что поле 'name' будет кликабельным
+    list_display = ('name', 'custom_id', 'price', 'category', 'rating')
+    search_fields = ('name', 'description')
+    list_filter = ('category',)
+    readonly_fields = ('rating',)
 
-    # Настраиваем поля для детальной страницы редактирования товара
-    fields = ('name', 'description', 'price', 'picture', 'category')  # Указываем все поля для редактирования
+@admin.register(ProductRating)
+class ProductRatingAdmin(admin.ModelAdmin):
+    list_display = ('product', 'user', 'is_like')
+    list_filter = ('is_like', 'product')
+    search_fields = ('product__name', 'user__username')

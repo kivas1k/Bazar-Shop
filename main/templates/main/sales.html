@@ -1,14 +1,8 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<h1>{{ title }}</h1>
-<ul>
-    {% for sale in sales %}
-        <li>
-            <a href="{% url 'sale_detail' sale_id=sale.id %}">{{ sale.title }}</a> - {{ sale.discount }}% off
-        </li>
-    {% empty %}
-        <li>Акции пока отсутствуют.</li>
-    {% endfor %}
-</ul>
+    <h1>{{ title }}</h1>
+    <p>Следите за нашими специальными предложениями и скидками на товары!</p>
 {% endblock %}

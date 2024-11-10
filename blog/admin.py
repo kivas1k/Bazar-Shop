@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.html import format_html  # Импортируем format_html
 from .models import Post
 
 @admin.register(Post)
@@ -11,7 +12,7 @@ class PostAdmin(admin.ModelAdmin):
 
     def image_tag(self, obj):
         if obj.image:
-            return '<img src="{}" width="100" />'.format(obj.image.url)
+            return format_html('<img src="{}" width="100" />', obj.image.url)
         return "Нет изображения"
     image_tag.allow_tags = True
     image_tag.short_description = 'Изображение'
