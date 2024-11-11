@@ -1,9 +1,10 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from PIL import Image
 
 class Post(models.Model):
-    custom_id = models.CharField(max_length=255, unique=True)
+    custom_id = models.CharField(max_length=255, unique=True)  # Уникальный идентификатор
     title = models.CharField(max_length=255)
     content = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
@@ -11,12 +12,18 @@ class Post(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     image = models.ImageField(upload_to='blog_images/', null=True, blank=True)
 
-    def __str__(self):
-        return self.title
+    def clean(self):
+        # Проверяем, что custom_id не пустой
+        if not self.custom_id:
+            raise ValidationError('Поле custom_id не может быть пустым')
 
     def save(self, *args, **kwargs):
+        self.clean()  # Проверка при сохранении
         super().save(*args, **kwargs)
         if self.image:
             img = Image.open(self.image.path)
             img.thumbnail((800, 800))
             img.save(self.image.path)
+
+    def __str__(self):
+        return self.title

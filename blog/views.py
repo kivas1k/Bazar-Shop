@@ -13,14 +13,14 @@ def blog_home(request):
     return render(request, 'blog/blog_home.html', {'title': 'Блог', 'menu': menu, 'posts': posts})
 
 def blog_post(request, custom_id):
-    post = get_object_or_404(Post, custom_id=custom_id)  # Получаем пост по custom_id
+    post = get_object_or_404(Post, custom_id=custom_id)
     return render(request, 'blog/blog_post.html', {'title': post.title, 'menu': menu, 'post': post})
 
 @login_required
 @user_passes_test(is_admin)
 def blog_create(request):
     if request.method == 'POST':
-        form = PostForm(request.POST, request.FILES)  # Передаем FILES для обработки изображений
+        form = PostForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
@@ -33,12 +33,21 @@ def blog_create(request):
 @login_required
 @user_passes_test(is_admin)
 def blog_edit(request, custom_id):
-    post = get_object_or_404(Post, custom_id=custom_id)  # Получаем пост по custom_id
+    post = get_object_or_404(Post, custom_id=custom_id)
     if request.method == 'POST':
-        form = PostForm(request.POST, instance=post)
+        form = PostForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
             form.save()
             return redirect('blog_post', custom_id=post.custom_id)
     else:
         form = PostForm(instance=post)
     return render(request, 'blog/blog_edit.html', {'title': 'Редактировать статью', 'menu': menu, 'form': form})
+
+@login_required
+@user_passes_test(is_admin)
+def blog_delete(request, custom_id):
+    post = get_object_or_404(Post, custom_id=custom_id)
+    if request.method == 'POST':
+        post.delete()
+        return redirect('blog_home')
+    return render(request, 'blog/blog_delete.html', {'title': 'Удалить статью', 'menu': menu, 'post': post})
