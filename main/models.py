@@ -2,12 +2,14 @@ from django.db import models
 from django.contrib.auth.models import User
 from PIL import Image
 
+
 class Category(models.Model):
-    custom_id = models.CharField(max_length=10, unique=True)
+    custom_id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255)
     pic_cat = models.ImageField(upload_to='categories/')
     description = models.TextField()
     parent = models.ForeignKey('self', on_delete=models.CASCADE, related_name='subcategories', null=True, blank=True)
+
 
     def __str__(self):
         return self.name
@@ -44,6 +46,7 @@ class Product(models.Model):
         likes = self.ratings.filter(is_like=True).count()
         dislikes = self.ratings.filter(is_like=False).count()
         return likes - dislikes
+
 
 class ProductRating(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='ratings')

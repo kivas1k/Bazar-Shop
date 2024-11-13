@@ -1,10 +1,13 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, HttpResponseNotFound
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseNotFound
+from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Category, Product
 from .forms import CategoryForm, ProductForm
 
-# Меню, которое будет отображаться на каждой странице
 menu = ["О нас", "Каталог", "Блог", "Акции", "Отзывы", "Контакты", "Войти"]
+
+def is_admin(user):
+    return user.is_superuser
 
 def index(request):
     data = {
@@ -58,6 +61,74 @@ def product_detail(request, custom_id):
         'product': product
     })
 
+@login_required
+@user_passes_test(is_admin)
+def add_category(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('/')
+    else:
+        form = CategoryForm()
+    return render(request, 'main/add_category.html', {'title': 'Добавить категорию', 'menu': menu, 'form': form})
+
+@login_required
+@user_passes_test(is_admin)
+def edit_category(request, custom_id):
+    category = get_object_or_404(Category, custom_id=custom_id)
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            return redirect('category_detail', custom_id=category.custom_id)
+    else:
+        form = CategoryForm(instance=category)
+    return render(request, 'main/edit_category.html', {'title': 'Редактировать категорию', 'menu': menu, 'form': form})
+
+@login_required
+@user_passes_test(is_admin)
+def delete_category(request, custom_id):
+    category = get_object_or_404(Category, custom_id=custom_id)
+    if request.method == 'POST':
+        category.delete()
+        return redirect('all_categories')
+    return render(request, 'main/delete_category.html', {'title': 'Удалить категорию', 'menu': menu, 'category': category})
+
+@login_required
+@user_passes_test(is_admin)
+def add_product(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('/')
+    else:
+        form = ProductForm()
+    return render(request, 'main/add_product.html', {'title': 'Добавить товар', 'menu': menu, 'form': form})
+
+@login_required
+@user_passes_test(is_admin)
+def edit_product(request, custom_id):
+    product = get_object_or_404(Product, custom_id=custom_id)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('product_detail', custom_id=product.custom_id)
+    else:
+        form = ProductForm(instance=product)
+    return render(request, 'main/edit_product.html', {'title': 'Редактировать товар', 'menu': menu, 'form': form})
+
+@login_required
+@user_passes_test(is_admin)
+def delete_product(request, custom_id):
+    product = get_object_or_404(Product, custom_id=custom_id)
+    if request.method == 'POST':
+        product.delete()
+        return redirect('all_products')
+    return render(request, 'main/delete_product.html', {'title': 'Удалить товар', 'menu': menu, 'product': product})
+
 def sales(request):
     return render(request, 'main/sales.html', {'title': 'Акции', 'menu': menu})
 
@@ -76,82 +147,6 @@ def search_view(request):
         'menu': menu,
         'results': results
     })
-
-# Функции для работы с категориями
-
-def add_category(request):
-    if request.method == 'POST':
-        form = CategoryForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('catalog')
-    else:
-        form = CategoryForm()
-
-    return render(request, 'main/add_category.html', {
-        'form': form,
-        'title': 'Добавить категорию',
-        'menu': menu,
-    })
-
-def edit_category(request, custom_id):
-    category = get_object_or_404(Category, custom_id=custom_id)
-    if request.method == 'POST':
-        form = CategoryForm(request.POST, instance=category)
-        if form.is_valid():
-            form.save()
-            return redirect('catalog')
-    else:
-        form = CategoryForm(instance=category)
-
-    return render(request, 'main/edit_category.html', {
-        'form': form,
-        'title': 'Редактировать категорию',
-        'menu': menu,
-    })
-
-def delete_category(request, custom_id):
-    category = get_object_or_404(Category, custom_id=custom_id)
-    category.delete()
-    return redirect('catalog')
-
-# Функции для работы с продуктами
-
-def add_product(request):
-    if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES)  # Добавляем поддержку файлов (картинок)
-        if form.is_valid():
-            form.save()
-            return redirect('all_products')
-    else:
-        form = ProductForm()
-
-    return render(request, 'main/add_product.html', {
-        'form': form,
-        'title': 'Добавить товар',
-        'menu': menu,
-    })
-
-def edit_product(request, custom_id):
-    product = get_object_or_404(Product, custom_id=custom_id)
-    if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES, instance=product)
-        if form.is_valid():
-            form.save()
-            return redirect('all_products')
-    else:
-        form = ProductForm(instance=product)
-
-    return render(request, 'main/edit_product.html', {
-        'form': form,
-        'title': 'Редактировать товар',
-        'menu': menu,
-    })
-
-def delete_product(request, custom_id):
-    product = get_object_or_404(Product, custom_id=custom_id)
-    product.delete()
-    return redirect('all_products')
 
 # Страница с ошибкой 404
 def page_not_found(request, exception):

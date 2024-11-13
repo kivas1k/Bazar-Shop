@@ -8,4 +8,11 @@
   {% if post.image %}
     <img src="{{ post.image.url }}" alt="{{ post.title }}" width="800">
   {% endif %}
+
+  {% if user.is_authenticated and user.is_superuser %}
+    <div class="post-actions">
+      <a href="{% url 'blog_edit' post.custom_id %}" class="btn btn-warning">Редактировать</a>
+      <a href="{% url 'blog_delete' post.custom_id %}" class="btn btn-danger">Удалить</a>
+    </div>
+  {% endif %}
 {% endblock %}

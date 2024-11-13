@@ -1,15 +1,11 @@
 {% extends 'base.html' %}
-
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
     <h1>{{ title }}</h1>
     <ul>
-        {% for category in categories %}
-            <li>
-                <a href="{% url 'category_detail' category.custom_id %}">{{ category.name }}</a>
-                <img src="{{ category.pic_cat.url }}" alt="{{ category.name }}">
-            </li>
+        {% for product in products %}
+            <li><a href="{% url 'product_detail' product.custom_id %}">{{ product.name }}</a></li>
         {% endfor %}
     </ul>
 {% endblock %}
