@@ -1,15 +1,36 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %}Все категории{% endblock %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
-    <ul>
-        {% for category in categories %}
-            <li>
-                <a href="{% url 'category_detail' category.custom_id %}">{{ category.name }}</a>
-                <img src="{{ category.pic_cat.url }}" alt="{{ category.name }}">
-            </li>
-        {% endfor %}
-    </ul>
+  <h1>{{ title }}</h1>
+
+  {% if user.is_authenticated and user.is_superuser %}
+    <a href="{% url 'add_category' %}" class="btn btn-primary">Добавить новую категорию</a>
+  {% endif %}
+
+  <div class="category-list">
+    {% for category in categories %}
+      <div class="category-item">
+        <h2>
+          <a href="{% url 'category_detail' category.custom_id %}">{{ category.name }}</a>
+        </h2>
+
+        {% if category.pic_cat %}
+          <div class="category-image">
+            <img src="{{ category.pic_cat.url }}" alt="{{ category.name }}" width="200">
+          </div>
+        {% else %}
+          <p>Изображение не доступно</p>
+        {% endif %}
+
+        {% if user.is_authenticated and user.is_superuser %}
+          <div class="category-actions">
+            <a href="{% url 'edit_category' category.custom_id %}" class="btn btn-warning">Редактировать</a>
+            <a href="{% url 'delete_category' category.custom_id %}" class="btn btn-danger">Удалить</a>
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
 {% endblock %}

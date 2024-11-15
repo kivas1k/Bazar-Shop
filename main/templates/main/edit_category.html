@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}Редактирование категории{% endblock %}
+{% block title %}Редактировать категорию{% endblock %}
 
 {% block content %}
-    <h1>Редактирование категории: {{ category.name }}</h1>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Сохранить изменения</button>
-    </form>
+  <h1>{{ title }}</h1>
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-warning">Сохранить изменения</button>
+  </form>
 {% endblock %}

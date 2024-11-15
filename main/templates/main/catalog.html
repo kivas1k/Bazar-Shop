@@ -1,11 +1,35 @@
 {% extends 'base.html' %}
-{% block title %}{{ title }}{% endblock %}
+
+{% block title %}Каталог товаров{% endblock %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
-    <ul>
-        {% for product in products %}
-            <li><a href="{% url 'product_detail' product.custom_id %}">{{ product.name }}</a></li>
-        {% endfor %}
-    </ul>
+  <h1>{{ title }}</h1>
+
+  {% if user.is_authenticated and user.is_superuser %}
+    <a href="{% url 'add_product' %}" class="btn btn-primary">Добавить новый товар</a>
+  {% endif %}
+
+  <div class="product-list">
+    {% for product in products %}
+      <div class="product-item">
+        <h2>
+          <a href="{% url 'product_detail' product.custom_id %}">{{ product.name }}</a>
+        </h2>
+        {% if product.picture %}
+          <img src="{{ product.picture.url }}" alt="{{ product.name }}" width="200">
+        {% endif %}
+        <p>{{ product.description }}</p>
+
+        <!-- Отображение цены с символом рубля -->
+        <p class="price">{{ product.price|floatformat:2 }}₽</p>
+
+        {% if user.is_authenticated and user.is_superuser %}
+          <div class="product-actions">
+            <a href="{% url 'edit_product' product.custom_id %}" class="btn btn-warning">Редактировать</a>
+            <a href="{% url 'delete_product' product.custom_id %}" class="btn btn-danger">Удалить</a>
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
 {% endblock %}

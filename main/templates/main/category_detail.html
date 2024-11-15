@@ -4,13 +4,38 @@
 
 {% block content %}
     <h1>{{ category.name }}</h1>
+
+    {% if category.pic_cat %}
+        <div class="category-image">
+            <img src="{{ category.pic_cat.url }}" alt="{{ category.name }}" width="300">
+        </div>
+    {% else %}
+        <p>Изображение не доступно</p>
+    {% endif %}
+
     <p>{{ category.description }}</p>
+
+    <h2>Товары в этой категории</h2>
     <ul>
         {% for product in products %}
             <li>
                 <a href="{% url 'product_detail' product.custom_id %}">{{ product.name }}</a>
                 - {{ product.price }} руб.
+                {% if product.picture %}
+                    <img src="{{ product.picture.url }}" alt="{{ product.name }}" width="100">
+                {% else %}
+                    <p>Изображение товара не доступно</p>
+                {% endif %}
             </li>
+        {% empty %}
+            <li>Нет товаров в этой категории.</li>
         {% endfor %}
     </ul>
+
+    {% if user.is_authenticated and user.is_superuser %}
+        <div class="category-actions">
+            <a href="{% url 'edit_category' category.custom_id %}" class="btn btn-warning">Редактировать</a>
+            <a href="{% url 'delete_category' category.custom_id %}" class="btn btn-danger">Удалить</a>
+        </div>
+    {% endif %}
 {% endblock %}

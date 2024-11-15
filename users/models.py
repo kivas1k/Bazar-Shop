@@ -12,11 +12,12 @@ class UserProfile(models.Model):
         return self.user.username
 
     def save(self, *args, **kwargs):
-        # Если аватар существует, изменим его размер
+        # Сначала сохраняем, чтобы получить путь к файлу
+        super().save(*args, **kwargs)
+
+        # Изменяем размер изображения, если оно превышает 300x300
         if self.avatar:
-            img = Image.open(self.avatar)
-            # Если изображение больше чем 300x300, изменяем его размер
+            img = Image.open(self.avatar.path)
             if img.height > 300 or img.width > 300:
                 img.thumbnail((300, 300))
-                img.save(self.avatar.path)  # Сохраняем измененное изображение
-        super().save(*args, **kwargs)  # Не забываем вызвать save родительского класса
+                img.save(self.avatar.path)  # Сохраняем только уменьшенное изображение

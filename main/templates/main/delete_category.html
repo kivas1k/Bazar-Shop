@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}Удаление категории{% endblock %}
+{% block title %}Удалить категорию{% endblock %}
 
 {% block content %}
-    <h1>Вы уверены, что хотите удалить категорию "{{ category.name }}"?</h1>
-    <form method="POST">
-        {% csrf_token %}
-        <button type="submit">Да, удалить</button>
-        <a href="{% url 'catalog' %}">Отмена</a>
-    </form>
+  <h1>{{ title }}</h1>
+  <p>Вы уверены, что хотите удалить категорию "{{ category.name }}"?</p>
+  <form method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Удалить</button>
+    <a href="{% url 'all_categories' %}" class="btn btn-secondary">Отменить</a>
+  </form>
 {% endblock %}

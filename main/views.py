@@ -20,11 +20,19 @@ def about(request):
     return render(request, 'main/about.html', {'title': 'О сайте', 'menu': menu})
 
 def catalog(request):
-    categories = Category.objects.all()
+    products = Product.objects.all()  # Получаем все товары
     return render(request, 'main/catalog.html', {
         'title': 'Каталог товаров',
         'menu': menu,
-        'categories': categories
+        'products': products,  # Передаем только товары
+    })
+
+def product_detail(request, custom_id):
+    product = get_object_or_404(Product, custom_id=custom_id)
+    return render(request, 'main/product_detail.html', {
+        'title': f"Товар: {product.name}",
+        'menu': menu,
+        'product': product
     })
 
 def all_categories(request):
@@ -35,13 +43,6 @@ def all_categories(request):
         'categories': categories
     })
 
-def all_products(request):
-    products = Product.objects.all()
-    return render(request, 'main/all_products.html', {
-        'title': 'Все товары',
-        'menu': menu,
-        'products': products
-    })
 
 def category_detail(request, custom_id):
     category = get_object_or_404(Category, custom_id=custom_id)
@@ -68,7 +69,7 @@ def add_category(request):
         form = CategoryForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('/')
+            return redirect('all_categories')  # Перенаправляем на страницу с категориями
     else:
         form = CategoryForm()
     return render(request, 'main/add_category.html', {'title': 'Добавить категорию', 'menu': menu, 'form': form})
@@ -78,13 +79,14 @@ def add_category(request):
 def edit_category(request, custom_id):
     category = get_object_or_404(Category, custom_id=custom_id)
     if request.method == 'POST':
-        form = CategoryForm(request.POST, instance=category)
+        form = CategoryForm(request.POST, request.FILES, instance=category)
         if form.is_valid():
             form.save()
             return redirect('category_detail', custom_id=category.custom_id)
     else:
         form = CategoryForm(instance=category)
     return render(request, 'main/edit_category.html', {'title': 'Редактировать категорию', 'menu': menu, 'form': form})
+
 
 @login_required
 @user_passes_test(is_admin)

@@ -1,11 +1,19 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ product.name }}{% endblock %}
+{% block title %}Товар: {{ product.name }}{% endblock %}
 
 {% block content %}
-    <h1>{{ product.name }}</h1>
-    <img src="{{ product.picture.url }}" alt="{{ product.name }}">
-    <p>{{ product.description }}</p>
-    <p>Цена: {{ product.price }} руб.</p>
-    <p>Рейтинг: {{ product.rating }}</p>
+  <h1>{{ product.name }}</h1>
+  <p>{{ product.description }}</p>
+
+  {% if product.picture %}
+    <img src="{{ product.picture.url }}" alt="{{ product.name }}" width="800">
+  {% endif %}
+
+  {% if user.is_authenticated and user.is_superuser %}
+    <div class="product-actions">
+      <a href="{% url 'edit_product' product.custom_id %}" class="btn btn-warning">Редактировать</a>
+      <a href="{% url 'delete_product' product.custom_id %}" class="btn btn-danger">Удалить</a>
+    </div>
+  {% endif %}
 {% endblock %}
