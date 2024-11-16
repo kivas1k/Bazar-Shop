@@ -16,9 +16,9 @@
           <a href="{% url 'category_detail' category.custom_id %}">{{ category.name }}</a>
         </h2>
 
-        {% if category.pic_cat %}
+        {% if category.picture %}
           <div class="category-image">
-            <img src="{{ category.pic_cat.url }}" alt="{{ category.name }}" width="200">
+            <img src="{{ category.picture.url }}" alt="{{ category.name }}" width="200">
           </div>
         {% else %}
           <p>Изображение не доступно</p>

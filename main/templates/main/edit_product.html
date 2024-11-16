@@ -3,10 +3,23 @@
 {% block title %}Редактирование товара{% endblock %}
 
 {% block content %}
-    <h1>Редактирование товара: {{ product.name }}</h1>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Сохранить изменения</button>
-    </form>
+  <h1>Редактирование товара: {{ product.name }}</h1>
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <div class="form-group">
+      <label for="id_custom_id">Кастомное ID</label>
+      <input type="text" name="custom_id" value="{{ form.custom_id.value }}" id="id_custom_id" class="form-control">
+      {% if form.custom_id.errors %}
+        <div class="alert alert-danger">
+          {% for error in form.custom_id.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <button type="submit" class="btn btn-warning">Сохранить изменения</button>
+  </form>
 {% endblock %}

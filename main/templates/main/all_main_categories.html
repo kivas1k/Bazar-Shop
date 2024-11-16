@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Все основные категории{% endblock %}
+
+{% block content %}
+  <h1>{{ title }}</h1>
+
+  {% if user.is_authenticated and user.is_superuser %}
+    <a href="{% url 'add_main_category' %}" class="btn btn-primary">Добавить новую основную категорию</a>
+  {% endif %}
+
+  <div class="main-category-list">
+    {% for main_category in main_categories %}
+      <div class="main-category-item">
+        <h2>
+          <a href="{% url 'main_category_detail' main_category.custom_id %}">{{ main_category.name }}</a>
+        </h2>
+
+        {% if main_category.picture %}
+          <div class="main-category-image">
+            <img src="{{ main_category.picture.url }}" alt="{{ main_category.name }}" width="200">
+          </div>
+        {% else %}
+          <p>Изображение не доступно</p>
+        {% endif %}
+
+        <p>{{ main_category.description }}</p>
+
+        {% if user.is_authenticated and user.is_superuser %}
+          <div class="main-category-actions">
+            <a href="{% url 'edit_main_category' main_category.custom_id %}" class="btn btn-warning">Редактировать</a>
+            <a href="{% url 'delete_main_category' main_category.custom_id %}" class="btn btn-danger">Удалить</a>
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

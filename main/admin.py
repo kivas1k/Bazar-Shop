@@ -1,21 +1,27 @@
 from django.contrib import admin
-from .models import Category, Product, ProductRating
+from .models import Category, Product, MainCategory
 
+# Админка для главных категорий
+@admin.register(MainCategory)
+class MainCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'picture')  # Отображение полей в списке
+    search_fields = ('name', 'description')  # Поиск по имени и описанию
+    list_filter = ('name',)  # Фильтрация по имени
+
+# Админка для категорий
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'custom_id', 'parent')
-    search_fields = ('name',)
-    list_filter = ('parent',)
+    list_display = ('name', 'custom_id', 'main_category', 'description', 'picture')  # Отображаем имя, ID, главную категорию, описание и картинку
+    search_fields = ('name', 'custom_id', 'description')  # Поиск по имени, ID и описанию
+    list_filter = ('main_category',)  # Фильтрация по главной категории
 
+# Админка для продуктов
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'custom_id', 'price', 'category', 'rating')
-    search_fields = ('name', 'description')
-    list_filter = ('category',)
-    readonly_fields = ('rating',)
+    list_display = ('name', 'custom_id', 'price', 'category', 'picture')  # Отображаем имя, ID, цену, категорию и картинку
+    search_fields = ('name', 'description', 'custom_id')  # Поиск по имени, описанию и ID
+    list_filter = ('category', 'price')  # Фильтрация по категории и цене
 
-@admin.register(ProductRating)
-class ProductRatingAdmin(admin.ModelAdmin):
-    list_display = ('product', 'user', 'is_like')
-    list_filter = ('is_like', 'product')
-    search_fields = ('product__name', 'user__username')
+    # Поля для редактирования, которые могут быть доступны только для администраторов
+    readonly_fields = ('price',)
+

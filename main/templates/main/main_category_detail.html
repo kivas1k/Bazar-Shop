@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ main_category.name }}{% endblock %}
+
+{% block content %}
+    <h1>{{ main_category.name }}</h1>
+
+    {% if main_category.image %}
+        <div class="main-category-image">
+            <img src="{{ main_category.image.url }}" alt="{{ main_category.name }}" width="300">
+        </div>
+    {% else %}
+        <p>Изображение не доступно</p>
+    {% endif %}
+
+    <p>{{ main_category.description }}</p>
+
+    <h2>Подкатегории в этой основной категории</h2>
+    <ul>
+        {% for subcategory in main_category.subcategories.all %}
+            <li>
+                <a href="{% url 'category_detail' subcategory.custom_id %}">{{ subcategory.name }}</a>
+            </li>
+        {% empty %}
+            <li>Нет подкатегорий в этой категории.</li>
+        {% endfor %}
+    </ul>
+
+    {% if user.is_authenticated and user.is_superuser %}
+        <div class="main-category-actions">
+            <a href="{% url 'edit_main_category' main_category.custom_id %}" class="btn btn-warning">Редактировать</a>
+            <a href="{% url 'delete_main_category' main_category.custom_id %}" class="btn btn-danger">Удалить</a>
+        </div>
+    {% endif %}
+{% endblock %}

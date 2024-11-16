@@ -5,10 +5,18 @@
 {% block content %}
     <h1>{{ title }}</h1>
     <p>Добро пожаловать в наш магазин одежды!</p>
+
     {% if user.is_authenticated and user.is_staff %}
         <div class="admin-actions">
             <a href="{% url 'add_category' %}" class="btn btn-primary">Добавить категорию</a>
             <a href="{% url 'add_product' %}" class="btn btn-primary">Добавить товар</a>
         </div>
+
+        <h2>Добавить основную категорию</h2>
+        <form method="POST" action="{% url 'add_main_category' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success">Добавить основную категорию</button>
+        </form>
     {% endif %}
 {% endblock %}
