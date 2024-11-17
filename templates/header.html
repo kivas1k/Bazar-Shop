@@ -1,45 +1,35 @@
 {% load static %}
 
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAZARSHOP</title>
-    <link rel="stylesheet" href="{% static 'main/css/styles_for_header.css' %}">
-</head>
-<body>
-    <div class="header-banner">Скидка в 10% на все товары при покупке от 3 товаров</div>
-    <header>
-        <div class="container">
-            <div class="logo-container">
-                <a href="{% url 'home' %}" class="logo">
-                    <img src="{% static 'main/images/logo.png' %}" alt="Логотип BAZARSHOP" class="logo-image">
-                    BAZARSHOP
-                </a>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="{% url 'about' %}">О нас</a></li>
-                    <li><a href="{% url 'blog_home' %}">БЛОГ</a></li>
-                    <li><a href="#">Мужчинам</a></li>
-                    <li><a href="#">Женщинам</a></li>
-                </ul>
-            </nav>
-            <div class="header-right">
-                {% if user.is_authenticated %}
-                    <a href="{% url 'logout' %}" class="btn">Выйти</a>
-                    <a href="{% url 'profile' %}" class="profile">
-                        <img src="{% static 'main/images/user.png' %}" alt="Личный кабинет" class="icon">
-                    </a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="btn">Войти</a>
-                    <a href="{% url 'register' %}" class="btn">Регистрация</a>
-                {% endif %}
-                <a href="{% url 'cart' %}" class="cart">
-                    <img src="{% static 'main/images/korzina.png' %}" alt="Корзина" class="icon">
-                </a>
-            </div>
+<div class="header-banner">Скидка в 10% на все товары при покупке от 3 товаров</div>
+<header>
+    <div class="container">
+        <div class="logo-container">
+            <a href="{% url 'home' %}" class="logo">
+                <img src="{% static 'main/images/logo.png' %}" alt="Логотип BAZARSHOP" class="logo-image">
+                BAZARSHOP
+            </a>
         </div>
-    </header>
-</body>
-</html>
+        <nav>
+            <ul>
+                <li><a href="{% url 'about' %}">О нас</a></li>
+                <li><a href="{% url 'blog_home' %}">Блог</a></li>
+                <li><a href="{% url 'catalog' %}">Каталог товаров</a></li>
+                <li><a href="{% url 'all_main_categories' %}">Категории</a></li>
+            </ul>
+        </nav>
+        <div class="header-right">
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}" class="btn">Выйти</a>
+                <a href="{% url 'profile' %}" class="profile">
+                    <img src="{% static 'main/images/user.png' %}" alt="Личный кабинет" class="icon">
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn">Войти</a>
+                <a href="{% url 'register' %}" class="btn">Регистрация</a>
+            {% endif %}
+            <a href="{% url 'cart' %}" class="cart">
+                <img src="{% static 'main/images/korzina.png' %}" alt="Корзина" class="icon">
+            </a>
+        </div>
+    </div>
+</header>

@@ -1,14 +1,22 @@
+{% load static %}
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% endblock %}</title>
+    <title>{% block title %}BAZARSHOP{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'main/css/styles_for_header.css' %}">
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
-    {% include 'header.html' %}
-
-    {% block content %}
-    {% endblock %}
+    {% if request.path != '/users/register/' and request.path != '/users/login/' %}
+        {% include 'header.html' %}
+    {% endif %}
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <script src="{% static 'main/js/scripts.js' %}"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

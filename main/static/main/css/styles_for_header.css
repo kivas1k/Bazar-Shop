@@ -67,28 +67,28 @@ nav a, .btn {
     font-size: 16px;
     line-height: 1.5;
     padding: 8px;
-    border-radius: 4px; /* Единое скругление для всех кнопок */
+    border-radius: 4px;
     transition: background-color 0.3s ease;
     background-color: transparent;
 }
 
 nav a:hover, .btn:hover {
-    background-color: #e0e0e0; /* Серый фон при наведении */
-    border-radius: 10px; /* Скруглённые углы при наведении */
+    background-color: #e0e0e0;
+    border-radius: 10px;
 }
 
 .header-right {
     display: flex;
     align-items: center;
     margin-left: auto;
-    margin-right: 30px; /* Сдвигает блок кнопок и иконок левее */
+    margin-right: 30px;
 }
 
 .icon {
     width: 25px;
     height: 25px;
     margin-left: 10px;
-    margin-top: 5px; /* Опускаем иконки чуть ниже */
+    margin-top: 5px;
 }
 
 .cart {
@@ -113,7 +113,7 @@ nav a:hover, .btn:hover {
 }
 
 .search-input:focus {
-    border-color: #007bff; /* Цвет рамки при фокусе */
+    border-color: #007bff;
 }
 
 .search-btn {
@@ -129,9 +129,9 @@ nav a:hover, .btn:hover {
 }
 
 .search-btn:hover {
-    background-color: #0056b3; /* Цвет кнопки при наведении */
+    background-color: #0056b3;
 }
 
 .search-btn:focus {
-    outline: none; /* Убираем стандартный фокусный контур */
+    outline: none;
 }

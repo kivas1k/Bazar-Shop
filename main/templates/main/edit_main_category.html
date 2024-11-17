@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}Редактировать основную категорию{% endblock %}
+{% block title %}Удалить основную категорию{% endblock %}
 
 {% block content %}
   <h1>{{ title }}</h1>
-  <form method="POST" enctype="multipart/form-data">
+  <p>Вы уверены, что хотите удалить основную категорию "{{ main_category.name }}"?</p>
+  <form method="POST">
     {% csrf_token %}
-    {{ form.as_p }}
-
-    <button type="submit" class="btn btn-warning">Сохранить изменения</button>
+    <button type="submit" class="btn btn-danger">Удалить</button>
+    <a href="{% url 'all_main_categories' %}" class="btn btn-secondary">Отменить</a>
   </form>
 {% endblock %}

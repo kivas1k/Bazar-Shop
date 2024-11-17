@@ -1,14 +1,37 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'users/css/login.css' %}">
+{% endblock %}
+
 {% block content %}
-  <h2>Вход</h2>
-  <form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    {% if error %}
-      <p style="color: red;">{{ error }}</p>
-    {% endif %}
-    <button type="submit">Войти</button>
-  </form>
-  <p>Еще нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
+  <div class="login-page">
+    <div class="form">
+      <h2>Вход</h2>
+      <form method="POST">
+        {% csrf_token %}
+
+        <!-- Отображаем поля формы вручную -->
+        <input type="email" name="email" placeholder="Email" required value="{{ form.email.value }}">
+        <input type="password" name="password" placeholder="Пароль" required value="{{ form.password.value }}">
+
+        {% if messages %}
+          <ul>
+            {% for message in messages %}
+              <li style="color: red;">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <button type="submit">Войти</button>
+      </form>
+
+      <!-- Ссылка для регистрации с одинаковым стилем -->
+      <p class="message">
+        Еще нет аккаунта? <a href="{% url 'register' %}" class="auth-link">Зарегистрироваться</a>
+      </p>
+    </div>
+  </div>
 {% endblock %}

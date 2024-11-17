@@ -28,7 +28,7 @@ urlpatterns = [
 
     # Главные категории
     path('main_categories/', views.all_main_categories, name='all_main_categories'),  # Все главные категории
-    path('main_category/<str:custom_id>/', views.main_category_detail, name='main_category_detail'),  # Подробности главной категории
+    path('main_category/<str:custom_id>/', views.main_category_detail, name='main_category_detail'),
     path('main_categories/add/', views.add_main_category, name='add_main_category'),
     path('main_categories/edit/<str:custom_id>/', views.edit_main_category, name='edit_main_category'),
     path('main_categories/delete/<str:custom_id>/', views.delete_main_category, name='delete_main_category'),

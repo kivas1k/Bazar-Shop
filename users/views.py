@@ -4,15 +4,19 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from .forms import UserProfileForm, UserRegistrationForm, EmailAuthenticationForm
 from .models import UserProfile
+from django.conf import settings
 
-# Функция для регистрации пользователя
+# Функция регистрации пользователя
 def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # Авторизуем пользователя сразу после регистрации
-            return redirect('home')  # Перенаправление на главную страницу или другую страницу
+
+            # Указываем backend вручную для авторизации
+            login(request, user, backend=settings.AUTHENTICATION_BACKENDS[0])
+
+            return redirect('home')  # Перенаправление на главную страницу
     else:
         form = UserRegistrationForm()
     return render(request, 'users/register.html', {'form': form})
@@ -25,6 +29,9 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             return redirect('home')  # Перенаправление на главную страницу
+        else:
+            # Если форма не прошла валидацию, отображаем ошибки
+            messages.error(request, 'Неверный логин или пароль')
     else:
         form = EmailAuthenticationForm()
     return render(request, 'users/login.html', {'form': form})

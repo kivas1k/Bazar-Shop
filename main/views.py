@@ -61,9 +61,9 @@ def all_main_categories(request):
         'main_categories': main_categories
     })
 
-def main_category_detail(request, pk):
-    main_category = get_object_or_404(MainCategory, pk=pk)
-    subcategories = main_category.subcategory_set.all()
+def main_category_detail(request, custom_id):
+    main_category = get_object_or_404(MainCategory, custom_id=custom_id)
+    subcategories = main_category.subcategories.all()
     return render(request, 'main/main_category_detail.html', {
         'title': f"Главная категория: {main_category.name}",
         'menu': menu,

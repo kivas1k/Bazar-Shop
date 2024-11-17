@@ -5,9 +5,9 @@
 {% block content %}
     <h1>{{ main_category.name }}</h1>
 
-    {% if main_category.image %}
+    {% if main_category.picture %}
         <div class="main-category-image">
-            <img src="{{ main_category.image.url }}" alt="{{ main_category.name }}" width="300">
+            <img src="{{ main_category.picture.url }}" alt="{{ main_category.name }}" width="300">
         </div>
     {% else %}
         <p>Изображение не доступно</p>

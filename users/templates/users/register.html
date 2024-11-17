@@ -1,11 +1,26 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'users/css/register.css' %}">
+{% endblock %}
+
 {% block content %}
-  <h2>Регистрация</h2>
-  <form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Зарегистрироваться</button>
-  </form>
-  <p>Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a></p>
+  <div class="login-page">
+    <div class="form">
+      <h2>Регистрация</h2>
+      <form method="POST" class="register-form">
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Имя пользователя" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password1" placeholder="Пароль" required>
+        <input type="password" name="password2" placeholder="Подтверждение пароля" required>
+        <button type="submit">Зарегистрироваться</button>
+        <p class="message">Уже есть аккаунт? <a href="{% url 'login' %}" class="auth-link">Войти</a></p>
+      </form>
+    </div>
+  </div>
+
+  <script src="{% static 'users/js/register.js' %}"></script>
 {% endblock %}
