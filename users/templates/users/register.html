@@ -10,12 +10,15 @@
   <div class="login-page">
     <div class="form">
       <h2>Регистрация</h2>
-      <form method="POST" class="register-form">
+      <form method="POST" class="register-form" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="text" name="username" placeholder="Имя пользователя" required>
-        <input type="email" name="email" placeholder="Email" required>
+        <input type="text" name="username" placeholder="Имя пользователя" required value="{{ form.username.initial|default:'' }}">
+        <input type="email" name="email" placeholder="Email" required value="{{ form.email.initial|default:'' }}">
         <input type="password" name="password1" placeholder="Пароль" required>
         <input type="password" name="password2" placeholder="Подтверждение пароля" required>
+        {% for field in form.non_field_errors %}
+          <p style="color: red;">{{ field }}</p>
+        {% endfor %}
         <button type="submit">Зарегистрироваться</button>
         <p class="message">Уже есть аккаунт? <a href="{% url 'login' %}" class="auth-link">Войти</a></p>
       </form>

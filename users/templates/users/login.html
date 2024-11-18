@@ -13,9 +13,9 @@
       <form method="POST">
         {% csrf_token %}
 
-        <!-- Отображаем поля формы вручную -->
-        <input type="email" name="email" placeholder="Email" required value="{{ form.email.value }}">
-        <input type="password" name="password" placeholder="Пароль" required value="{{ form.password.value }}">
+        <!-- Поле для ввода email или имени пользователя -->
+        <input type="text" name="username" placeholder="Email или имя пользователя" required value="{{ form.username.value }}">
+        <input type="password" name="password" placeholder="Пароль" required>
 
         {% if messages %}
           <ul>
