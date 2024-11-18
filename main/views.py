@@ -97,19 +97,14 @@ def edit_main_category(request, custom_id):
         form = MainCategoryForm(request.POST, request.FILES, instance=main_category)
 
         if form.is_valid():
-            # Проверяем уникальность custom_id
-            custom_id = form.cleaned_data['custom_id']
-            if MainCategory.objects.filter(custom_id=custom_id).exclude(pk=main_category.pk).exists():
-                form.add_error('custom_id', 'Это кастомное ID уже существует!')
-            else:
-                form.save()
-                return redirect('main_category_detail', pk=main_category.pk)
+            # Сохраняем изменения
+            form.save()
+            return redirect('main_category_detail', custom_id=main_category.custom_id)
     else:
         form = MainCategoryForm(instance=main_category)
 
     return render(request, 'main/edit_main_category.html', {
         'title': 'Редактировать главную категорию',
-        'menu': menu,
         'form': form
     })
 
@@ -117,16 +112,16 @@ def edit_main_category(request, custom_id):
 
 @login_required
 @user_passes_test(is_admin)
-def delete_main_category(request, pk):
-    main_category = get_object_or_404(MainCategory, pk=pk)
+def delete_main_category(request, custom_id):
+    main_category = get_object_or_404(MainCategory, custom_id=custom_id)
     if request.method == 'POST':
         main_category.delete()
         return redirect('all_main_categories')
     return render(request, 'main/delete_main_category.html', {
         'title': 'Удалить главную категорию',
-        'menu': menu,
         'main_category': main_category
     })
+
 
 @login_required
 @user_passes_test(is_admin)

@@ -10,6 +10,5 @@ urlpatterns = [
     path('post/<str:custom_id>/edit/', views.blog_edit, name='blog_edit'),  # Редактирование поста
     path('post/<str:custom_id>/delete/', views.blog_delete, name='blog_delete'),  # Удаление поста
 ]
-
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

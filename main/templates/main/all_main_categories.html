@@ -29,7 +29,7 @@
         {% if user.is_authenticated and user.is_superuser %}
           <div class="main-category-actions">
             <a href="{% url 'edit_main_category' main_category.custom_id %}" class="btn btn-warning">Редактировать</a>
-            <a href="{% url 'delete_main_category' main_category.custom_id %}" class="btn btn-danger">Удалить</a>
+            <a href="{% url 'delete_main_category' main_category.custom_id %}" class="btn btn-danger">Удалить</a>  <!-- Исправлено на custom_id -->
           </div>
         {% endif %}
       </div>
