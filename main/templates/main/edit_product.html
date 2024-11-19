@@ -1,25 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}Редактирование товара{% endblock %}
+{% block title %}Редактировать товар{% endblock %}
 
 {% block content %}
-  <h1>Редактирование товара: {{ product.name }}</h1>
+  <h1>{{ title }}</h1>
   <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
 
-    <div class="form-group">
-      <label for="id_custom_id">Кастомное ID</label>
-      <input type="text" name="custom_id" value="{{ form.custom_id.value }}" id="id_custom_id" class="form-control">
-      {% if form.custom_id.errors %}
-        <div class="alert alert-danger">
-          {% for error in form.custom_id.errors %}
-            <p>{{ error }}</p>
-          {% endfor %}
-        </div>
-      {% endif %}
-    </div>
-
     <button type="submit" class="btn btn-warning">Сохранить изменения</button>
+    <a href="{% url 'product_detail' product.custom_id %}" class="btn btn-secondary">Отменить</a>
   </form>
 {% endblock %}

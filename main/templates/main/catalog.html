@@ -5,9 +5,46 @@
 {% block content %}
   <h1>{{ title }}</h1>
 
-  {% if user.is_authenticated and user.is_superuser %}
-    <a href="{% url 'add_product' %}" class="btn btn-primary">Добавить новый товар</a>
-  {% endif %}
+  <div class="filters">
+    <form method="GET" action="{% url 'catalog' %}">
+      <!-- Фильтр по основной категории -->
+      <div class="filter-main-category">
+        <label for="main_category">Основная категория:</label>
+        <select name="main_category" id="main_category">
+          <option value="">Все основные категории</option>
+          {% for main_category in main_categories %}
+            <option value="{{ main_category.custom_id }}" {% if request.GET.main_category == main_category.custom_id %}selected{% endif %}>
+              {{ main_category.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Фильтр по категории -->
+      <div class="filter-category">
+        <label for="category">Категория:</label>
+        <select name="category" id="category">
+          <option value="">Все категории</option>
+          {% for category in categories %}
+            <option value="{{ category.custom_id }}" {% if request.GET.category == category.custom_id %}selected{% endif %}>
+              {{ category.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Фильтр по цене -->
+      <div class="filter-price">
+        <label for="min_price">Минимальная цена:</label>
+        <input type="number" name="min_price" id="min_price" placeholder="От" value="{{ request.GET.min_price }}">
+
+        <label for="max_price">Максимальная цена:</label>
+        <input type="number" name="max_price" id="max_price" placeholder="До" value="{{ request.GET.max_price }}">
+      </div>
+
+      <button type="submit" class="btn btn-primary">Применить фильтры</button>
+    </form>
+  </div>
 
   <div class="product-list">
     {% for product in products %}

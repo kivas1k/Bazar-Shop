@@ -20,12 +20,39 @@ def about(request):
     return render(request, 'main/about.html', {'title': 'О сайте', 'menu': menu})
 
 def catalog(request):
+    # Фильтруем продукты
     products = Product.objects.all()
-    return render(request, 'main/catalog.html', {
+
+    # Получаем все основные категории и подкатегории
+    main_categories = MainCategory.objects.all()
+    categories = Category.objects.all()
+
+    # Фильтрация по основной категории
+    main_category_filter = request.GET.get('main_category')
+    if main_category_filter:
+        products = products.filter(category__main_category__custom_id=main_category_filter)
+
+    # Фильтрация по категории
+    category_filter = request.GET.get('category')
+    if category_filter:
+        products = products.filter(category__custom_id=category_filter)
+
+    # Фильтрация по цене
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+    if min_price:
+        products = products.filter(price__gte=min_price)
+    if max_price:
+        products = products.filter(price__lte=max_price)
+
+    context = {
         'title': 'Каталог товаров',
-        'menu': menu,
+        'main_categories': main_categories,
+        'categories': categories,
         'products': products,
-    })
+    }
+
+    return render(request, 'main/catalog.html', context)
 
 def all_categories(request):
     categories = Category.objects.all()
@@ -81,6 +108,7 @@ def add_main_category(request):
             return redirect('all_main_categories')
     else:
         form = MainCategoryForm()
+        form.errors.clear()
     return render(request, 'main/add_main_category.html', {
         'title': 'Добавить главную категорию',
         'menu': menu,
@@ -201,7 +229,6 @@ def edit_product(request, custom_id):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
-            # Проверяем уникальность custom_id для продукта
             custom_id = form.cleaned_data['custom_id']
             if Product.objects.filter(custom_id=custom_id).exclude(pk=product.pk).exists():
                 form.add_error('custom_id', 'Это кастомное ID уже существует для другого товара!')
@@ -213,10 +240,9 @@ def edit_product(request, custom_id):
 
     return render(request, 'main/edit_product.html', {
         'title': 'Редактировать товар',
-        'menu': menu,
+        'product': product,  # Передаем сам продукт для использования в шаблоне
         'form': form
     })
-
 
 @login_required
 @user_passes_test(is_admin)
