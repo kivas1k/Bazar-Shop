@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Редактирование профиля</h2>
-  <form method="POST" enctype="multipart/form-data">
+<h2>Редактирование профиля</h2>
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Сохранить изменения</button>
-  </form>
-  <a href="{% url 'profile' %}">Назад</a>
+</form>
+<a href="{% url 'profile' %}">Назад</a>
 {% endblock %}

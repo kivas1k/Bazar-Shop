@@ -9,7 +9,6 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('profile/', views.profile, name='profile'),
     path('profile/edit/', views.profile_edit, name='profile_edit'),
-    path('profile/edit/avatar/', views.update_avatar, name='update_avatar'),
 ]
 
 if settings.DEBUG:
