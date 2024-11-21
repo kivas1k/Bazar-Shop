@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Post
 from .forms import PostForm
 
-menu = ["О нас", "Каталог", "Блог", "Акции", "Отзывы", "Контакты", "Войти"]
+menu = ["О нас", "Блог", "Каталог товаров", "Категории", "Подкатегории"]
 
 def is_admin(user):
     return user.is_superuser

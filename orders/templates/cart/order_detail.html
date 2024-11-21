@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Заказ #{{ order.id }}{% endblock %}
+
+{% block content %}
+  <h1>Детали заказа #{{ order.id }}</h1>
+
+  <h3>Дата создания: {{ order.created_at }}</h3>
+  <h3>Сумма заказа: {{ order.total_amount }}</h3>
+  <h3>Статус: {% if order.is_completed %}Завершен{% else %}Ожидает обработки{% endif %}</h3>
+
+  <h4>Товары в заказе:</h4>
+  <ul>
+    {% for item in items %}
+      <li>
+        {{ item.product.name }} - {{ item.quantity }} x {{ item.price }} = {{ item.total_price }}
+      </li>
+    {% endfor %}
+  </ul>
+
+  <a href="{% url 'view_orders' %}" class="btn btn-primary">Назад к заказам</a>
+{% endblock %}

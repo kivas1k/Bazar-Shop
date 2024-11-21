@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Оформление заказа{% endblock %}
+
+{% block content %}
+  <h1>Оформление заказа</h1>
+
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit" class="btn btn-success">Подтвердить заказ</button>
+  </form>
+
+  <h3>Итоговая сумма: {{ cart.total_amount }}</h3>
+{% endblock %}

@@ -4,10 +4,16 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import MainCategory, Category, Product
 from .forms import MainCategoryForm, CategoryForm, ProductForm
 
-menu = ["О нас", "Каталог", "Блог", "Акции", "Отзывы", "Контакты", "Войти"]
+menu = ["О нас", "Блог", "Каталог товаров", "Категории", "Подкатегории"]
 
 def is_admin(user):
     return user.is_superuser
+
+def privacy_policy(request):
+    return render(request, 'main/privacy_policy.html', {
+        'title': 'Политика конфиденциальности',
+        'menu': menu,
+    })
 
 def index(request):
     data = {
@@ -256,12 +262,6 @@ def delete_product(request, custom_id):
         'menu': menu,
         'product': product
     })
-
-def sales(request):
-    return render(request, 'main/sales.html', {'title': 'Акции', 'menu': menu})
-
-def reviews(request):
-    return render(request, 'main/reviews.html', {'title': 'Отзывы', 'menu': menu})
 
 def contacts(request):
     return render(request, 'main/contacts.html', {'title': 'Контакты', 'menu': menu})

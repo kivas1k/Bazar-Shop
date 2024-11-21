@@ -6,10 +6,9 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('', views.index, name='home'),
     path('about/', views.about, name='about'),
-    path('sales/', views.sales, name='sales'),
-    path('reviews/', views.reviews, name='reviews'),
     path('contacts/', views.contacts, name='contacts'),
     path('search/', views.search_view, name='search'),
+    path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
 
     path('categories/', views.all_categories, name='all_categories'),  # Общая ссылка на все категории
     path('category/<str:custom_id>/', views.category_detail, name='category_detail'),  # Отдельная категория
