@@ -7,6 +7,10 @@ class Cart(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    @property
+    def total_amount(self):
+        return sum(item.total_price for item in self.items.all())
+
     class Meta:
         verbose_name = "Корзина"
         verbose_name_plural = "Корзины"
@@ -16,8 +20,14 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='cart_items')
     quantity = models.PositiveIntegerField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)  # Цена за единицу товара
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # Цена за единицу товара
     total_price = models.DecimalField(max_digits=10, decimal_places=2)  # Итоговая сумма за количество
+
+    def save(self, *args, **kwargs):
+        if self.price is None:
+            self.price = self.product.price
+        self.total_price = self.price * self.quantity
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Элемент корзины"
@@ -29,7 +39,12 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_completed = models.BooleanField(default=False)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # Сумма будет вычисляться
+
+    def save(self, *args, **kwargs):
+        if not self.total_amount:
+            self.total_amount = sum(item.total_price for item in self.items.all())  # Подсчет общей суммы
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Заказ"

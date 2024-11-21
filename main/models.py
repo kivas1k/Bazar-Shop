@@ -3,7 +3,7 @@ from django.core.validators import MinValueValidator
 from PIL import Image
 
 class MainCategory(models.Model):
-    custom_id = models.CharField(max_length=10, unique=True)  # Добавляем кастомное ID
+    custom_id = models.CharField(max_length=10, unique=True)
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
     picture = models.ImageField(upload_to='main_categories/')

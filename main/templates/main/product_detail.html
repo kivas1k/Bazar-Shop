@@ -10,10 +10,17 @@
     <img src="{{ product.picture.url }}" alt="{{ product.name }}" width="800">
   {% endif %}
 
-  {% if user.is_authenticated and user.is_superuser %}
-    <div class="product-actions">
-      <a href="{% url 'edit_product' product.custom_id %}" class="btn btn-warning">Редактировать</a>
-      <a href="{% url 'delete_product' product.custom_id %}" class="btn btn-danger">Удалить</a>
+  <!-- Форма для добавления товара в корзину -->
+  {% if user.is_authenticated %}
+    <form method="POST" action="{% url 'add_to_cart' product.id %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary">Добавить в корзину</button>
+    </form>
+
+    <div>
+      <p>Товары в корзине: {{ cart.items.count }}</p>
+      <p>Общая стоимость: {{ total_price }} ₽</p>
     </div>
   {% endif %}
+
 {% endblock %}
