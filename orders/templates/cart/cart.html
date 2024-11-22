@@ -1,19 +1,53 @@
-{% for item in items %}
-  <div>
-    <h4>{{ item.product.name }}</h4>
-    <p>Цена: {{ item.product.price }} ₽</p>
-    <p>Количество: {{ item.quantity }}</p>
+{% extends 'base.html' %}
 
-    <!-- Форма для изменения количества товара -->
-    <form method="POST" action="{% url 'update_cart_item' item.id %}">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" class="btn btn-primary">Обновить</button>
-    </form>
+{% block title %}Корзина{% endblock %}
 
-    <form method="POST" action="{% url 'remove_from_cart' item.id %}">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-danger">Удалить</button>
-    </form>
-  </div>
-{% endfor %}
+{% block content %}
+<div class="cart-container">
+  <h1>Корзина</h1>
+
+  {% if items %}
+    <div class="cart-items">
+      {% for item in items %}
+        <div class="cart-item">
+          <!-- Изображение товара -->
+          <div class="cart-item-image">
+            <img src="{{ item.product.picture.url }}" alt="{{ item.product.name }}" width="100">
+          </div>
+
+          <!-- Информация о товаре -->
+          <div class="cart-item-info">
+            <h4>{{ item.product.name }}</h4>
+            <p>Цена за единицу: {{ item.product.price }} ₽</p>
+            <p>Количество: {{ item.quantity }}</p>
+            <p>Стоимость: {{ item.total_price }} ₽</p>
+          </div>
+
+          <div class="cart-item-actions">
+            <!-- Кнопки для изменения количества -->
+            <form method="POST" action="{% url 'update_cart_item' item.id %}" class="cart-form">
+              {% csrf_token %}
+              <button type="submit" name="action" value="increase" class="btn btn-primary">+</button>
+              <button type="submit" name="action" value="decrease" class="btn btn-primary">-</button>
+            </form>
+
+            <!-- Форма для удаления товара -->
+            <form method="POST" action="{% url 'remove_from_cart' item.id %}" class="cart-form">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Удалить</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="cart-summary">
+      <p class="total-items">Общее количество товаров: {{ items|length }}</p>
+      <p class="total-price">Общая стоимость: {{ total_price }} ₽</p>
+      <a href="{% url 'create_order' %}" class="btn btn-success">Перейти к оформлению</a>
+    </div>
+  {% else %}
+    <p>Ваша корзина пуста.</p>
+  {% endif %}
+</div>
+{% endblock %}

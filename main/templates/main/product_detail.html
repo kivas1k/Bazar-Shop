@@ -10,17 +10,14 @@
     <img src="{{ product.picture.url }}" alt="{{ product.name }}" width="800">
   {% endif %}
 
-  <!-- Форма для добавления товара в корзину -->
+  <!-- Отображение цены -->
+  <p class="price">Цена: {{ product.price|floatformat:2 }}₽</p>
+
   {% if user.is_authenticated %}
     <form method="POST" action="{% url 'add_to_cart' product.id %}">
       {% csrf_token %}
       <button type="submit" class="btn btn-primary">Добавить в корзину</button>
     </form>
-
-    <div>
-      <p>Товары в корзине: {{ cart.items.count }}</p>
-      <p>Общая стоимость: {{ total_price }} ₽</p>
-    </div>
   {% endif %}
 
 {% endblock %}
