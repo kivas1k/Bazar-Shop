@@ -5,7 +5,7 @@ from django.contrib import messages
 from .forms import UserProfileForm, UserRegistrationForm, EmailAuthenticationForm
 from django.conf import settings
 
-# Регистрация пользователя
+
 def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST, request.FILES)
@@ -17,7 +17,7 @@ def register(request):
         form = UserRegistrationForm()
     return render(request, 'users/register.html', {'form': form})
 
-# Аутентификация пользователя
+
 def login_view(request):
     if request.method == 'POST':
         form = EmailAuthenticationForm(data=request.POST)
@@ -31,18 +31,18 @@ def login_view(request):
         form = EmailAuthenticationForm()
     return render(request, 'users/login.html', {'form': form})
 
-# Выход пользователя
+
 def logout_view(request):
     logout(request)
     return redirect('login')
 
-# Просмотр профиля
+
 @login_required
 def profile(request):
     user_profile = request.user.profile
     return render(request, 'users/profile.html', {'user_profile': user_profile})
 
-# Редактирование профиля (включая аватар)
+
 @login_required
 def profile_edit(request):
     if request.method == 'POST':

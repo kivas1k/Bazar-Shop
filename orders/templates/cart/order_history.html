@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>История заказов</h1>
+
+  {% if orders %}
+    <ul>
+      {% for order in orders %}
+        <li>
+          <h3>Заказ #{{ order.id }} от {{ order.created_at }}</h3>
+          <p>Адрес: {{ order.address }}</p>
+          <p>Телефон: {{ order.phone_number }}</p>
+          <p>Общая сумма: {{ order.total_amount }}</p>
+          <ul>
+            {% for item in order.orderitem_set.all %}
+              <li>{{ item.product.name }} - {{ item.quantity }} шт. - {{ item.total_price }}</li>
+            {% endfor %}
+          </ul>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>У вас нет заказов.</p>
+  {% endif %}
+{% endblock %}

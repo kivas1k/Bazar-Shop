@@ -1,6 +1,7 @@
 from django import forms
 from .models import Category, Product, MainCategory
 
+
 class MainCategoryForm(forms.ModelForm):
     class Meta:
         model = MainCategory
@@ -12,6 +13,7 @@ class MainCategoryForm(forms.ModelForm):
             raise forms.ValidationError("Это кастомное ID уже существует для другой главной категории!")
         return custom_id
 
+
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
@@ -22,6 +24,7 @@ class CategoryForm(forms.ModelForm):
         if self.instance.pk and Category.objects.filter(custom_id=custom_id).exclude(pk=self.instance.pk).exists():
             raise forms.ValidationError("Это кастомное ID уже существует для другой категории!")
         return custom_id
+
 
 class ProductForm(forms.ModelForm):
     class Meta:

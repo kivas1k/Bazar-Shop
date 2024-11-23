@@ -1,13 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import Cart, CartItem, Order, OrderItem
 from main.models import Product
-from django.contrib import messages
-from .forms import UpdateCartItemForm, OrderForm
+from .forms import UpdateCartItemForm, CheckoutForm
+import uuid
+
 
 @login_required
 def view_cart(request):
-    cart, created = Cart.objects.get_or_create(user=request.user)
+    cart = Cart.objects.filter(user=request.user).first()
+    if not cart:
+        messages.warning(request, 'У вас нет активной корзины.')
+        return redirect('create_new_cart')
+
     items = cart.items.all()
     total_price = cart.total_amount
 
@@ -17,89 +23,111 @@ def view_cart(request):
         'total_price': total_price,
     })
 
+
 @login_required
 def add_to_cart(request, product_id):
-    if request.method == 'POST':
-        product = get_object_or_404(Product, custom_id=product_id)  # Убедитесь, что используете custom_id
-        cart, created = Cart.objects.get_or_create(user=request.user)
+    product = get_object_or_404(Product, id=product_id)
 
-        item, created = CartItem.objects.get_or_create(
-            cart=cart,
-            product=product,
-            defaults={'quantity': 1}
-        )
+    cart = Cart.objects.filter(user=request.user).first()
+    if not cart:
+        cart = Cart.objects.create(user=request.user)
 
-        if not created:
-            item.quantity += 1
-            item.save()
+    item, created = CartItem.objects.get_or_create(
+        cart=cart,
+        product=product,
+        defaults={'quantity': 1}
+    )
 
-        messages.success(request, f'Товар "{product.name}" добавлен в корзину.')
+    if not created:
+        item.quantity += 1
+        item.save()
 
-        return redirect('product_detail', custom_id=product.custom_id)
+    messages.success(request, f'Товар "{product.name}" добавлен в корзину.')
 
-    return redirect('catalog')
+    return redirect('view_cart')
+
 
 @login_required
 def remove_from_cart(request, item_id):
     item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
     item.delete()
+    messages.success(request, 'Товар удален из корзины.')
     return redirect('view_cart')
+
 
 @login_required
 def clear_cart(request):
     cart = get_object_or_404(Cart, user=request.user)
     cart.items.all().delete()
+    messages.success(request, 'Корзина очищена.')
     return redirect('view_cart')
+
 
 @login_required
 def update_cart_item(request, item_id):
     item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
 
     if request.method == 'POST':
-        action = request.POST.get('action')
-
-        if action == 'increase':
-            item.quantity += 1
-        elif action == 'decrease' and item.quantity > 1:
-            item.quantity -= 1
-
-        item.save()
-
-        messages.success(request, 'Количество товара обновлено.')
+        form = UpdateCartItemForm(request.POST, instance=item)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Количество товара обновлено.')
+        else:
+            messages.error(request, 'Ошибка при обновлении количества товара.')
 
     return redirect('view_cart')
 
+
 @login_required
-def create_order(request):
-    cart = Cart.objects.get(user=request.user)
-    order_form = OrderForm(request.POST or None)
+def checkout(request):
+    cart = get_object_or_404(Cart, user=request.user)
+    items = cart.items.all()
 
-    if request.method == 'POST' and order_form.is_valid():
-        order = order_form.save(commit=False)
-        order.cart = cart
-        order.user = request.user
-        order.save()
+    if not items:
+        messages.error(request, 'Корзина пуста. Добавьте товары перед оформлением заказа.')
+        return redirect('view_cart')
 
-        for item in cart.items.all():
-            OrderItem.objects.create(
-                order=order,
-                product=item.product,
-                quantity=item.quantity,
-                price=item.product.price,
+    if request.method == 'POST':
+        form = CheckoutForm(request.POST)
+        if form.is_valid():
+            order = Order.objects.create(
+                user=request.user,
+                cart_number=cart.cart_number,
+                address=form.cleaned_data['address'],
+                phone_number=form.cleaned_data['phone_number']
             )
+            for item in items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    quantity=item.quantity,
+                    price=item.price,
+                    total_price=item.total_price
+                )
+            cart.items.all().delete()
 
-        cart.items.all().delete()  # Очистить корзину после оформления заказа
-        messages.success(request, f'Ваш заказ #{order.order_number} был успешно создан!')
-        return redirect('view_orders')
+            cart.cart_number = str(uuid.uuid4())
+            cart.save()
 
-    return render(request, 'cart/create_order.html', {'form': order_form})
+            messages.success(request, 'Заказ успешно оформлен!')
+            return redirect('view_cart')
+        else:
+            messages.error(request, 'Ошибка при оформлении заказа.')
+    else:
+        form = CheckoutForm()
+
+    return render(request, 'cart/checkout.html', {
+        'form': form,
+        'items': items,
+        'total_price': cart.total_amount
+    })
 
 @login_required
-def view_orders(request):
-    orders = Order.objects.filter(user=request.user)
-    return render(request, 'cart/view_orders.html', {'orders': orders})
+def order_history(request):
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
 
-@login_required
-def order_detail(request, order_id):
-    order = get_object_or_404(Order, id=order_id, user=request.user)
-    return render(request, 'cart/order_detail.html', {'order': order})
+    return render(request, 'cart/order_history.html', {
+        'orders': orders,
+    })
+
+

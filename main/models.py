@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from PIL import Image
 
+
 class MainCategory(models.Model):
     custom_id = models.CharField(max_length=10, unique=True)
     name = models.CharField(max_length=255, unique=True)
@@ -18,7 +19,6 @@ class MainCategory(models.Model):
             if img.height > 300 or img.width > 300:
                 img.thumbnail((300, 300))
                 img.save(self.picture.path)
-
 
 
 class Category(models.Model):

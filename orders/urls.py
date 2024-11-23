@@ -9,10 +9,8 @@ urlpatterns = [
     path('cart/remove/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('cart/clear/', views.clear_cart, name='clear_cart'),
     path('cart/update/<int:item_id>/', views.update_cart_item, name='update_cart_item'),
-
-    path('orders/', views.view_orders, name='view_orders'),
-    path('orders/create/', views.create_order, name='create_order'),
-    path('orders/<int:order_id>/', views.order_detail, name='order_detail'),
+    path('checkout/', views.checkout, name='checkout'),
+    path('order/history/', views.order_history, name='order_history'),
 ]
 
 if settings.DEBUG:

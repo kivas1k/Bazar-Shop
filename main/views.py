@@ -6,14 +6,17 @@ from .forms import MainCategoryForm, CategoryForm, ProductForm
 
 menu = ["О нас", "Блог", "Каталог товаров", "Категории", "Подкатегории"]
 
+
 def is_admin(user):
     return user.is_superuser
+
 
 def privacy_policy(request):
     return render(request, 'main/privacy_policy.html', {
         'title': 'Политика конфиденциальности',
         'menu': menu,
     })
+
 
 def index(request):
     data = {
@@ -22,28 +25,25 @@ def index(request):
     }
     return render(request, 'main/index.html', context=data)
 
+
 def about(request):
     return render(request, 'main/about.html', {'title': 'О сайте', 'menu': menu})
 
+
 def catalog(request):
-    # Фильтруем продукты
     products = Product.objects.all()
 
-    # Получаем все основные категории и подкатегории
     main_categories = MainCategory.objects.all()
     categories = Category.objects.all()
 
-    # Фильтрация по основной категории
     main_category_filter = request.GET.get('main_category')
     if main_category_filter:
         products = products.filter(category__main_category__custom_id=main_category_filter)
 
-    # Фильтрация по категории
     category_filter = request.GET.get('category')
     if category_filter:
         products = products.filter(category__custom_id=category_filter)
 
-    # Фильтрация по цене
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
     if min_price:
@@ -60,6 +60,7 @@ def catalog(request):
 
     return render(request, 'main/catalog.html', context)
 
+
 def all_categories(request):
     categories = Category.objects.all()
     return render(request, 'main/all_categories.html', {
@@ -67,6 +68,7 @@ def all_categories(request):
         'menu': menu,
         'categories': categories
     })
+
 
 def category_detail(request, custom_id):
     category = get_object_or_404(Category, custom_id=custom_id)
@@ -78,6 +80,7 @@ def category_detail(request, custom_id):
         'menu': menu
     })
 
+
 def product_detail(request, custom_id):
     product = get_object_or_404(Product, custom_id=custom_id)
     return render(request, 'main/product_detail.html', {
@@ -86,6 +89,7 @@ def product_detail(request, custom_id):
         'product': product
     })
 
+
 def all_main_categories(request):
     main_categories = MainCategory.objects.all()
     return render(request, 'main/all_main_categories.html', {
@@ -93,6 +97,7 @@ def all_main_categories(request):
         'menu': menu,
         'main_categories': main_categories
     })
+
 
 def main_category_detail(request, custom_id):
     main_category = get_object_or_404(MainCategory, custom_id=custom_id)
@@ -103,6 +108,7 @@ def main_category_detail(request, custom_id):
         'main_category': main_category,
         'subcategories': subcategories
     })
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -131,7 +137,6 @@ def edit_main_category(request, custom_id):
         form = MainCategoryForm(request.POST, request.FILES, instance=main_category)
 
         if form.is_valid():
-            # Сохраняем изменения
             form.save()
             return redirect('main_category_detail', custom_id=main_category.custom_id)
     else:
@@ -141,7 +146,6 @@ def edit_main_category(request, custom_id):
         'title': 'Редактировать главную категорию',
         'form': form
     })
-
 
 
 @login_required
@@ -181,7 +185,6 @@ def edit_category(request, custom_id):
     if request.method == 'POST':
         form = CategoryForm(request.POST, request.FILES, instance=category)
         if form.is_valid():
-            # Проверяем уникальность custom_id для категории
             custom_id = form.cleaned_data['custom_id']
             if Category.objects.filter(custom_id=custom_id).exclude(pk=category.pk).exists():
                 form.add_error('custom_id', 'Это кастомное ID уже существует для другой категории!')
@@ -246,7 +249,7 @@ def edit_product(request, custom_id):
 
     return render(request, 'main/edit_product.html', {
         'title': 'Редактировать товар',
-        'product': product,  # Передаем сам продукт для использования в шаблоне
+        'product': product,
         'form': form
     })
 
@@ -263,8 +266,10 @@ def delete_product(request, custom_id):
         'product': product
     })
 
+
 def contacts(request):
     return render(request, 'main/contacts.html', {'title': 'Контакты', 'menu': menu})
+
 
 def search_view(request):
     query = request.GET.get('query', '')
@@ -275,6 +280,7 @@ def search_view(request):
         'menu': menu,
         'results': results
     })
+
 
 def page_not_found(request, exception):
     return HttpResponseNotFound("<h1>Страница не найдена</h1>")

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Оформление заказа{% endblock %}
+
+{% block content %}
+<div class="checkout-container">
+    <h1>Оформление заказа</h1>
+
+    <form method="POST" action="{% url 'checkout' %}" class="checkout-form">
+        {% csrf_token %}
+        <fieldset>
+            <legend>Детали заказа</legend>
+            {{ form.as_p }}
+        </fieldset>
+        <button type="submit" class="btn-submit">Оформить заказ</button>
+    </form>
+
+    <div class="order-summary">
+        <h2>Ваши товары</h2>
+        <table class="order-items-table">
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th>Количество</th>
+                    <th>Цена</th>
+                    <th>Сумма</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.price|floatformat:2 }} ₽</td>
+                    <td>{{ item.total_price|floatformat:2 }} ₽</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p><strong>Общая сумма:</strong> {{ total_price|floatformat:2 }} ₽</p>
+    </div>
+</div>
+{% endblock %}
