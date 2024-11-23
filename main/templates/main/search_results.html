@@ -1,17 +1,37 @@
 {% extends 'base.html' %}
 
-{% block title %}Результаты поиска: "{{ query }}"{% endblock %}
-
 {% block content %}
-    <h1>Результаты поиска для "{{ query }}"</h1>
+<h1>Результаты поиска: "{{ query }}"</h1>
+
+{% if products %}
+    <h2>Товары</h2>
     <ul>
-        {% for product in results %}
-            <li>
-                <a href="{% url 'product_detail' product.custom_id %}">{{ product.name }}</a>
-                - {{ product.price }} руб.
-            </li>
-        {% empty %}
-            <li>Ничего не найдено по вашему запросу.</li>
+        {% for product in products %}
+            <li><a href="{% url 'product_detail' custom_id=product.custom_id %}">{{ product.name }}</a></li>
         {% endfor %}
     </ul>
+{% endif %}
+
+{% if categories %}
+    <h2>Категории</h2>
+    <ul>
+        {% for category in categories %}
+            <li><a href="{% url 'category_detail' custom_id=category.custom_id %}">{{ category.name }}</a></li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if main_categories %}
+    <h2>Главные категории</h2>
+    <ul>
+        {% for main_category in main_categories %}
+            <li><a href="{% url 'main_category_detail' custom_id=main_category.custom_id %}">{{ main_category.name }}</a></li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if not products and not categories and not main_categories %}
+    <p>Ничего не найдено.</p>
+{% endif %}
+
 {% endblock %}

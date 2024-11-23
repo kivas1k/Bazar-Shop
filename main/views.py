@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+
 from django.http import HttpResponseNotFound
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import MainCategory, Category, Product
@@ -272,15 +273,32 @@ def contacts(request):
 
 
 def search_view(request):
-    query = request.GET.get('query', '')
-    results = Product.objects.filter(name__icontains=query)
+    query = request.GET.get('query', '').strip()
+    if query:
+        products = Product.objects.filter(name__icontains=query)
+        categories = Category.objects.filter(name__icontains=query)
+        main_categories = MainCategory.objects.filter(name__icontains=query)
+
+        # Проверка наличия результатов и отображение
+        return render(request, 'main/search_results.html', {
+            'query': query,
+            'title': 'Результаты поиска',
+            'menu': menu,
+            'products': products,
+            'categories': categories,
+            'main_categories': main_categories
+        })
+
     return render(request, 'main/search_results.html', {
         'query': query,
         'title': 'Результаты поиска',
         'menu': menu,
-        'results': results
+        'products': [],
+        'categories': [],
+        'main_categories': []
     })
-
 
 def page_not_found(request, exception):
     return HttpResponseNotFound("<h1>Страница не найдена</h1>")
+
+
