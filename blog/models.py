@@ -14,12 +14,12 @@ class Post(models.Model):
     image = models.ImageField(upload_to='blog_images/', null=True, blank=True)
 
     def clean(self):
-        # Проверяем, что custom_id не пустой
+
         if not self.custom_id:
             raise ValidationError('Поле custom_id не может быть пустым')
 
     def save(self, *args, **kwargs):
-        self.clean()  # Проверка при сохранении
+        self.clean()
         super().save(*args, **kwargs)
         if self.image:
             img = Image.open(self.image.path)

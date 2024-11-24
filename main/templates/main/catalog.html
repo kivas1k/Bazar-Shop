@@ -1,72 +1,108 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Каталог товаров{% endblock %}
 
 {% block content %}
-  <h1>{{ title }}</h1>
+  <div class="container my-5">
+    <h1 class="text-center my-5 display-4 text-uppercase">{{ title }}</h1>
 
-  <div class="filters">
-    <form method="GET" action="{% url 'catalog' %}">
-      <!-- Фильтр по основной категории -->
-      <div class="filter-main-category">
-        <label for="main_category">Основная категория:</label>
-        <select name="main_category" id="main_category">
-          <option value="">Все основные категории</option>
-          {% for main_category in main_categories %}
-            <option value="{{ main_category.custom_id }}" {% if request.GET.main_category == main_category.custom_id %}selected{% endif %}>
-              {{ main_category.name }}
-            </option>
-          {% endfor %}
-        </select>
+    {% if user.is_authenticated and user.is_superuser %}
+      <div class="text-center mb-5">
+        <a href="{% url 'add_product' %}" class="btn btn-success btn-lg rounded-pill">Добавить новый товар</a>
       </div>
+    {% endif %}
 
-      <!-- Фильтр по категории -->
-      <div class="filter-category">
-        <label for="category">Категория:</label>
-        <select name="category" id="category">
-          <option value="">Все категории</option>
-          {% for category in categories %}
-            <option value="{{ category.custom_id }}" {% if request.GET.category == category.custom_id %}selected{% endif %}>
-              {{ category.name }}
-            </option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <!-- Фильтр по цене -->
-      <div class="filter-price">
-        <label for="min_price">Минимальная цена:</label>
-        <input type="number" name="min_price" id="min_price" placeholder="От" value="{{ request.GET.min_price }}">
-
-        <label for="max_price">Максимальная цена:</label>
-        <input type="number" name="max_price" id="max_price" placeholder="До" value="{{ request.GET.max_price }}">
-      </div>
-
-      <button type="submit" class="btn btn-primary">Применить фильтры</button>
-    </form>
-  </div>
-
-  <div class="product-list">
-    {% for product in products %}
-      <div class="product-item">
-        <h2>
-          <a href="{% url 'product_detail' product.custom_id %}">{{ product.name }}</a>
-        </h2>
-        {% if product.picture %}
-          <img src="{{ product.picture.url }}" alt="{{ product.name }}" width="200">
-        {% endif %}
-        <p>{{ product.description }}</p>
-
-        <!-- Отображение цены с символом рубля -->
-        <p class="price">{{ product.price|floatformat:2 }}₽</p>
-
-        {% if user.is_authenticated and user.is_superuser %}
-          <div class="product-actions">
-            <a href="{% url 'edit_product' product.custom_id %}" class="btn btn-warning">Редактировать</a>
-            <a href="{% url 'delete_product' product.custom_id %}" class="btn btn-danger">Удалить</a>
+    <div class="filters mb-5">
+      <form method="GET" action="{% url 'catalog' %}" class="p-4 shadow rounded bg-light">
+        <div class="row g-4">
+          <!-- Фильтр по основной категории -->
+          <div class="col-md-4">
+            <div class="filter-main-category">
+              <label for="main_category" class="form-label">Основная категория:</label>
+              <select name="main_category" id="main_category" class="form-select">
+                <option value="">Все основные категории</option>
+                {% for main_category in main_categories %}
+                  <option value="{{ main_category.custom_id }}" {% if request.GET.main_category == main_category.custom_id %}selected{% endif %}>
+                    {{ main_category.name }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
           </div>
+
+          <div class="col-md-4">
+            <div class="filter-category">
+              <label for="category" class="form-label">Категория:</label>
+              <select name="category" id="category" class="form-select">
+                <option value="">Все категории</option>
+                {% for category in categories %}
+                  <option value="{{ category.custom_id }}" {% if request.GET.category == category.custom_id %}selected{% endif %}>
+                    {{ category.name }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="filter-price">
+              <label for="min_price" class="form-label">Минимальная цена:</label>
+              <input type="number" name="min_price" id="min_price" placeholder="От" value="{{ request.GET.min_price }}" class="form-control mb-2">
+              <label for="max_price" class="form-label">Максимальная цена:</label>
+              <input type="number" name="max_price" id="max_price" placeholder="До" value="{{ request.GET.max_price }}" class="form-control mb-2">
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 mt-3 rounded-pill">Применить фильтры</button>
+      </form>
+    </div>
+
+    <div class="product-list row g-4">
+      {% for product in products %}
+        <div class="col-md-4 col-sm-6 col-12">
+          <div class="product-item border rounded shadow-sm p-3 h-100">
+            <h2 class="product-title">
+              <a href="{% url 'product_detail' product.custom_id %}" class="text-decoration-none text-dark">{{ product.name }}</a>
+            </h2>
+            {% if product.picture %}
+              <img src="{{ product.picture.url }}" alt="{{ product.name }}" class="img-fluid mb-3">
+            {% else %}
+              <img src="{% static 'main/images/default-product.jpg' %}" alt="Продукт" class="img-fluid mb-3">
+            {% endif %}
+            <p class="text-muted">{{ product.description|truncatewords:20 }}</p>
+            <p class="price fw-bold">{{ product.price|floatformat:2 }}₽</p>
+
+            {% if user.is_authenticated and user.is_superuser %}
+              <div class="product-actions">
+                <a href="{% url 'edit_product' product.custom_id %}" class="btn btn-warning btn-sm rounded-pill">Редактировать</a>
+                <a href="{% url 'delete_product' product.custom_id %}" class="btn btn-danger btn-sm rounded-pill">Удалить</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="pagination my-5 text-center">
+      <div class="btn-group" role="group">
+        {% if products.has_previous %}
+          <a href="?page=1" class="btn btn-outline-secondary">Первая</a>
+          <a href="?page={{ products.previous_page_number }}" class="btn btn-outline-secondary">Предыдущая</a>
         {% endif %}
       </div>
-    {% endfor %}
+
+      <span class="mx-3">Страница {{ products.number }} из {{ products.paginator.num_pages }}</span>
+
+      <div class="btn-group" role="group">
+        {% if products.has_next %}
+          <a href="?page={{ products.next_page_number }}" class="btn btn-outline-secondary">Следующая</a>
+          <a href="?page={{ products.paginator.num_pages }}" class="btn btn-outline-secondary">Последняя</a>
+        {% endif %}
+      </div>
+    </div>
+
   </div>
 {% endblock %}

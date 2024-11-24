@@ -3,16 +3,23 @@
 {% block title %}{{ post.title }}{% endblock %}
 
 {% block content %}
-  <h1>{{ post.title }}</h1>
-  <p>{{ post.content }}</p>
-  {% if post.image %}
-    <img src="{{ post.image.url }}" alt="{{ post.title }}" width="800">
-  {% endif %}
+  <div class="container my-5">
+    <h1 class="text-center text-uppercase mb-4">{{ post.title }}</h1>
 
-  {% if user.is_authenticated and user.is_superuser %}
-    <div class="post-actions">
-      <a href="{% url 'blog_edit' post.custom_id %}" class="btn btn-warning">Редактировать</a>
-      <a href="{% url 'blog_delete' post.custom_id %}" class="btn btn-danger">Удалить</a>
+    <div class="content-wrapper bg-light p-4 rounded shadow-sm">
+      <p class="lead">{{ post.content }}</p>
     </div>
-  {% endif %}
+    {% if post.image %}
+      <div class="mt-4 text-center">
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid rounded shadow-sm">
+      </div>
+    {% endif %}
+
+    {% if user.is_authenticated and user.is_superuser %}
+      <div class="mt-4 d-flex justify-content-center">
+        <a href="{% url 'blog_edit' post.custom_id %}" class="btn btn-warning btn-lg me-3 rounded-pill">Редактировать</a>
+        <a href="{% url 'blog_delete' post.custom_id %}" class="btn btn-danger btn-lg rounded-pill">Удалить</a>
+      </div>
+    {% endif %}
+  </div>
 {% endblock %}

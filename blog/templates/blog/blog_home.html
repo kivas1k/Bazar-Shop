@@ -3,30 +3,73 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-  <h1>{{ title }}</h1>
-  {% if user.is_authenticated and user.is_superuser %}
-    <a href="{% url 'blog_create' %}" class="btn btn-primary">Создать новый пост</a>
-  {% endif %}
-  <div class="blog-posts">
-    {% for post in posts %}
-      <div class="post">
-        <h2>
-          {% if post.custom_id %}
-            <a href="{% url 'blog_post' post.custom_id %}">{{ post.title }}</a>
-          {% else %}
-            {{ post.title }}
-          {% endif %}
-        </h2>
-        {% if post.image %}
-          <img src="{{ post.image.url }}" alt="{{ post.title }}">
-        {% endif %}
-        {% if user.is_authenticated and user.is_superuser %}
-          {% if post.custom_id %}
-            <a href="{% url 'blog_edit' post.custom_id %}">Редактировать</a> |
-            <a href="{% url 'blog_delete' post.custom_id %}">Удалить</a>
-          {% endif %}
+  <div class="container my-5">
+    <!-- Заголовок страницы -->
+    <h1 class="text-center my-5 display-4 text-uppercase">{{ title }}</h1>
+
+    <!-- Кнопка для создания нового поста для авторизованных пользователей -->
+    {% if user.is_authenticated and user.is_superuser %}
+      <div class="text-center mb-5">
+        <a href="{% url 'blog_create' %}" class="btn btn-primary btn-lg rounded-pill">Создать новый пост</a>
+      </div>
+    {% endif %}
+
+    <!-- Список постов -->
+    <div class="row g-4">
+      {% for post in posts %}
+        <div class="col-md-4 col-sm-6 col-12">
+          <div class="post mb-4 border p-4 rounded shadow-sm bg-white">
+            <!-- Заголовок поста -->
+            <h2 class="h4 mb-3">
+              {% if post.custom_id %}
+                <a href="{% url 'blog_post' post.custom_id %}" class="text-decoration-none text-dark">{{ post.title }}</a>
+              {% else %}
+                {{ post.title }}
+              {% endif %}
+            </h2>
+
+            <!-- Изображение поста -->
+            {% if post.image %}
+              <div class="mb-3">
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid rounded shadow-sm">
+              </div>
+            {% endif %}
+
+            <!-- Краткое содержание поста (по желанию) -->
+            <p class="text-muted mb-3">{{ post.content|truncatewords:20 }}</p>
+
+            <!-- Действия для авторизованных пользователей -->
+            {% if user.is_authenticated and user.is_superuser %}
+              {% if post.custom_id %}
+                <div class="post-actions mt-3">
+                  <a href="{% url 'blog_edit' post.custom_id %}" class="btn btn-warning btn-sm rounded-pill">Редактировать</a>
+                  <a href="{% url 'blog_delete' post.custom_id %}" class="btn btn-danger btn-sm rounded-pill">Удалить</a>
+                </div>
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Пагинация -->
+    <div class="pagination my-5 text-center">
+      <div class="btn-group" role="group">
+        {% if posts.has_previous %}
+          <a href="?page=1" class="btn btn-outline-secondary">Первая</a>
+          <a href="?page={{ posts.previous_page_number }}" class="btn btn-outline-secondary">Предыдущая</a>
         {% endif %}
       </div>
-    {% endfor %}
+
+      <span class="mx-3">Страница {{ posts.number }} из {{ posts.paginator.num_pages }}</span>
+
+      <div class="btn-group" role="group">
+        {% if posts.has_next %}
+          <a href="?page={{ posts.next_page_number }}" class="btn btn-outline-secondary">Следующая</a>
+          <a href="?page={{ posts.paginator.num_pages }}" class="btn btn-outline-secondary">Последняя</a>
+        {% endif %}
+      </div>
+    </div>
+
   </div>
 {% endblock %}
