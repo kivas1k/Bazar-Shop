@@ -3,8 +3,30 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
-    <p>Свяжитесь с нами через форму ниже или по телефону:</p>
-    <p>Телефон: +9 999 999 99 99</p>
-    <p>Email: bazarshop@email.ru</p>
+<div class="container my-5">
+    <h1 class="text-center my-5 display-4 text-uppercase">{{ title }}</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-10">
+            <div class="contact-info p-4 shadow rounded bg-light">
+                <p class="fs-5 text-muted mb-4">
+                    <i class="bi bi-info-circle-fill text-primary me-2"></i>
+                    Мы всегда рады вам помочь. Свяжитесь с нами по указанным контактам:
+                </p>
+                <ul class="list-unstyled fs-5">
+                    <li class="mb-3">
+                        <i class="bi bi-telephone-fill text-primary me-2"></i>
+                        <strong>Телефон:</strong>
+                        <a href="tel:+99999999999" class="text-decoration-none text-dark">+9 999 999 99 99</a>
+                    </li>
+                    <li>
+                        <i class="bi bi-envelope-fill text-primary me-2"></i>
+                        <strong>Email:</strong>
+                        <a href="mailto:bazarshop@email.ru" class="text-decoration-none text-dark">bazarshop@email.ru</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -17,7 +17,6 @@
     <div class="filters mb-5">
       <form method="GET" action="{% url 'catalog' %}" class="p-4 shadow rounded bg-light">
         <div class="row g-4">
-          <!-- Фильтр по основной категории -->
           <div class="col-md-4">
             <div class="filter-main-category">
               <label for="main_category" class="form-label">Основная категория:</label>
@@ -85,24 +84,5 @@
         </div>
       {% endfor %}
     </div>
-
-    <div class="pagination my-5 text-center">
-      <div class="btn-group" role="group">
-        {% if products.has_previous %}
-          <a href="?page=1" class="btn btn-outline-secondary">Первая</a>
-          <a href="?page={{ products.previous_page_number }}" class="btn btn-outline-secondary">Предыдущая</a>
-        {% endif %}
-      </div>
-
-      <span class="mx-3">Страница {{ products.number }} из {{ products.paginator.num_pages }}</span>
-
-      <div class="btn-group" role="group">
-        {% if products.has_next %}
-          <a href="?page={{ products.next_page_number }}" class="btn btn-outline-secondary">Следующая</a>
-          <a href="?page={{ products.paginator.num_pages }}" class="btn btn-outline-secondary">Последняя</a>
-        {% endif %}
-      </div>
-    </div>
-
   </div>
 {% endblock %}

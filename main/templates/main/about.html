@@ -3,6 +3,17 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
-    <p>Мы — ваш надежный партнер в мире моды. Добро пожаловать в наш магазин одежды, где стиль встречается с качеством!</p>
+<div class="container my-5">
+    <h1 class="text-center my-5 display-4 text-uppercase">{{ title }}</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="about-info p-4 shadow rounded bg-light">
+                <p class="fs-5 text-muted">
+                    Мы — ваш надежный партнер в мире моды. Добро пожаловать в наш магазин одежды, где стиль встречается с качеством!
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
