@@ -4,9 +4,28 @@
 
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'users/css/register.css' %}">
+  <style>
+    .back-to-home {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #555;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        text-decoration: none;
+        font-size: 14px;
+        transition: background-color 0.3s;
+    }
+    .back-to-home:hover {
+        background: #333;
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
+  <a href="{% url 'home' %}" class="back-to-home">На главную</a>
   <div class="login-page">
     <div class="form">
       <h2>Регистрация</h2>
@@ -24,6 +43,4 @@
       </form>
     </div>
   </div>
-
-  <script src="{% static 'users/js/register.js' %}"></script>
 {% endblock %}

@@ -1,70 +1,75 @@
 body {
-  background: #f0e6d2; /* Кремовый фон */
-  font-family: "Arial", sans-serif; /* Шрифт Arial */
+  background: #f0f0f0;
+  font-family: "Arial", sans-serif;
+  color: #333;
 }
 
 .form {
   position: relative;
   z-index: 1;
-  background: #fff8f0; /* Светлый кремовый фон */
+  background: #ffffff;
   max-width: 360px;
   margin: 0 auto 100px;
   padding: 45px;
   text-align: center;
-  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
-  border-radius: 8px; /* Скругленные углы */
+  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  border: 1px solid #ddd;
 }
 
 .form input {
-  font-family: "Arial", sans-serif; /* Шрифт Arial */
-  outline: 0;
-  background: #f7f0e1; /* Очень светлый кремовый для input */
+  font-family: "Arial", sans-serif;
+  outline: none;
+  background: #f9f9f9;
   width: 100%;
-  border: 1px solid #e0d4b5;
+  border: 1px solid #ccc;
   margin: 0 0 15px;
   padding: 15px;
   box-sizing: border-box;
   font-size: 14px;
   border-radius: 4px;
+  color: #333;
 }
 
 .form input:focus {
   background: #ffffff;
-  border-color: #c9b78d;
+  border-color: #666;
 }
 
 .form button {
-  font-family: "Arial", sans-serif; /* Шрифт Arial */
+  font-family: "Arial", sans-serif;
   text-transform: uppercase;
-  outline: 0;
-  background: #c9b78d; /* Нежно-золотистый */
+  outline: none;
+  background: #333;
   width: 100%;
-  border: 0;
+  border: none;
   padding: 15px;
   color: #fff;
   font-size: 14px;
   cursor: pointer;
   border-radius: 4px;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
 .form button:hover,
 .form button:active,
 .form button:focus {
-  background: #d8ca8b; /* Светлый золотистый оттенок при наведении */
+  background: #555;
+  transform: scale(1.02);
 }
 
 .form .message {
   margin: 15px 0 0;
-  color: #b3b3b3;
+  color: #666;
   font-size: 12px;
 }
 
 .form .message a {
-  color: #c9b78d;
+  color: #333;
   text-decoration: none;
+  font-weight: bold;
 }
 
 .form .message a:hover {
-  color: #b29e6e;
+  color: #000;
 }

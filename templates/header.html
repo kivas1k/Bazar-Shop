@@ -1,16 +1,23 @@
 {% load static %}
-
 <div class="header-banner bg-light text-dark py-2 text-center" style="background-color: #ffecd9;">
-    <strong>Всех с наступающим новым годом!</strong>
+    <strong>Всех с наступающим новым годом! 🎄</strong>
 </div>
 
 <header class="bg-white py-3 shadow-sm">
     <div class="container d-flex justify-content-between align-items-center">
+        <!-- Логотип -->
         <a href="{% url 'home' %}" class="text-decoration-none text-dark d-flex align-items-center">
             <img src="{% static 'main/images/logo.png' %}" alt="Логотип" class="me-2" style="height: 50px;">
             <span class="fs-4 fw-bold" style="color: #7a6e5f;">BAZARSHOP</span>
         </a>
-        <nav class="d-flex gap-3">
+
+        <!-- Кнопка для мобильного меню -->
+        <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileMenu" aria-controls="mobileMenu" aria-expanded="false" aria-label="Toggle navigation">
+            ☰
+        </button>
+
+        <!-- Навигация -->
+        <nav class="d-none d-md-flex gap-3">
             <a href="{% url 'blog_home' %}" class="text-decoration-none text-muted">Блог</a>
             <a href="{% url 'catalog' %}" class="text-decoration-none text-muted">Каталог</a>
             <a href="{% url 'all_main_categories' %}" class="text-decoration-none text-muted">Категории</a>
@@ -20,7 +27,9 @@
                 <a href="{% url 'order_history' %}" class="text-decoration-none text-muted">История заказов</a>
             {% endif %}
         </nav>
-        <div class="d-flex align-items-center gap-2">
+
+        <!-- Поиск и кнопки -->
+        <div class="d-none d-md-flex align-items-center gap-2">
             <form action="{% url 'search' %}" method="get" class="d-flex">
                 <input type="text" name="query" placeholder="Искать..." class="form-control me-2" value="{{ request.GET.query }}" style="border-radius: 25px;">
                 <button type="submit" class="btn btn-outline-secondary" style="border-radius: 25px;">🔍</button>
@@ -35,5 +44,25 @@
                 <a href="{% url 'register' %}" class="btn btn-outline-success btn-sm" style="border-radius: 25px;">Регистрация</a>
             {% endif %}
         </div>
+    </div>
+
+    <!-- Мобильное меню -->
+    <div class="collapse d-md-none mt-3" id="mobileMenu">
+        <nav class="d-flex flex-column gap-2">
+            <a href="{% url 'blog_home' %}" class="text-decoration-none text-muted">Блог</a>
+            <a href="{% url 'catalog' %}" class="text-decoration-none text-muted">Каталог</a>
+            <a href="{% url 'all_main_categories' %}" class="text-decoration-none text-muted">Категории</a>
+            <a href="{% url 'all_categories' %}" class="text-decoration-none text-muted">Подкатегории</a>
+
+            {% if user.is_authenticated %}
+                <a href="{% url 'order_history' %}" class="text-decoration-none text-muted">История заказов</a>
+                <a href="{% url 'profile' %}" class="text-decoration-none text-muted">Профиль</a>
+                <a href="{% url 'view_cart' %}" class="text-decoration-none text-muted">Корзина</a>
+                <a href="{% url 'logout' %}" class="text-decoration-none text-muted">Выйти</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="text-decoration-none text-muted">Войти</a>
+                <a href="{% url 'register' %}" class="text-decoration-none text-muted">Регистрация</a>
+            {% endif %}
+        </nav>
     </div>
 </header>

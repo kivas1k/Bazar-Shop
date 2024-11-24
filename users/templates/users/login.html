@@ -4,19 +4,35 @@
 
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'users/css/login.css' %}">
+  <style>
+    .back-to-home {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #555;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        text-decoration: none;
+        font-size: 14px;
+        transition: background-color 0.3s;
+    }
+    .back-to-home:hover {
+        background: #333;
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
+  <a href="{% url 'home' %}" class="back-to-home">На главную</a>
   <div class="login-page">
     <div class="form">
       <h2>Вход</h2>
       <form method="POST">
         {% csrf_token %}
-
-        <!-- Поле для ввода email или имени пользователя -->
         <input type="text" name="username" placeholder="Email или имя пользователя" required value="{{ form.username.value }}">
         <input type="password" name="password" placeholder="Пароль" required>
-
         {% if messages %}
           <ul>
             {% for message in messages %}
@@ -24,14 +40,9 @@
             {% endfor %}
           </ul>
         {% endif %}
-
         <button type="submit">Войти</button>
       </form>
-
-      <!-- Ссылка для регистрации с одинаковым стилем -->
-      <p class="message">
-        Еще нет аккаунта? <a href="{% url 'register' %}" class="auth-link">Зарегистрироваться</a>
-      </p>
+      <p class="message">Еще нет аккаунта? <a href="{% url 'register' %}" class="auth-link">Зарегистрироваться</a></p>
     </div>
   </div>
 {% endblock %}
