@@ -1,22 +1,50 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ title }}{% endblock %}
+{% load static %}
+
+{% block title %}Главная страница{% endblock %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
-    <p>Добро пожаловать в наш магазин одежды!</p>
-
+    <!-- Блок для администраторов -->
     {% if user.is_authenticated and user.is_staff %}
-        <div class="admin-actions">
-            <a href="{% url 'add_category' %}" class="btn btn-primary">Добавить категорию</a>
-            <a href="{% url 'add_product' %}" class="btn btn-primary">Добавить товар</a>
+        <div class="mb-4">
+            <a href="{% url 'add_category' %}" class="btn btn-outline-primary">Добавить категорию</a>
+            <a href="{% url 'add_product' %}" class="btn btn-outline-primary">Добавить товар</a>
+            <a href="{% url 'add_main_category' %}" class="btn btn-outline-primary">Добавить основную категорию</a>
+        </div>
+    {% endif %}
+
+    <!-- Приветственное сообщение -->
+    <div class="text-center mb-4">
+        <h1>Добро пожаловать в наш магазин одежды!</h1>
+        <p class="lead" style="color: #7a6e5f;">Здесь вы найдёте всё, что нужно для вашего стиля.</p>
+    </div>
+
+    <!-- Прямоугольные изображения для категорий -->
+    <div class="row g-3">
+        <!-- Прямоугольник для категории "Men" -->
+        <div class="col-md-6">
+            <a href="{% url 'main_category_detail' custom_id='men' %}" class="text-decoration-none">
+                <div class="card shadow-sm" style="border-radius: 12px;">
+                    <img src="{% static 'main/images/men_image.jpg' %}" class="card-img-top" alt="Men's Fashion" style="border-radius: 12px; width: 100%; height: auto;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title" style="color: #7a6e5f;">Men's Fashion</h5>
+                    </div>
+                </div>
+            </a>
         </div>
 
-        <h2>Добавить основную категорию</h2>
-        <form method="POST" action="{% url 'add_main_category' %}" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-success">Добавить основную категорию</button>
-        </form>
-    {% endif %}
+        <!-- Прямоугольник для категории "Women" -->
+        <div class="col-md-6">
+            <a href="{% url 'main_category_detail' custom_id='women' %}" class="text-decoration-none">
+                <div class="card shadow-sm" style="border-radius: 12px;">
+                    <img src="{% static 'main/images/women_image.jpg' %}" class="card-img-top" alt="Women's Fashion" style="border-radius: 12px; width: 100%; height: auto;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title" style="color: #7a6e5f;">Women's Fashion</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
 {% endblock %}

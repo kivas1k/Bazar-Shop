@@ -1,56 +1,39 @@
 {% load static %}
 
-<div class="header-banner">
-    Скидка в 10% на все товары при покупке от 3 товаров
+<div class="header-banner bg-light text-dark py-2 text-center" style="background-color: #ffecd9;">
+    <strong>Всех с наступающим новым годом!</strong>
 </div>
 
-<header>
-    <div class="container">
-        <!-- Логотип -->
-        <div class="logo-container">
-            <a href="{% url 'home' %}" class="logo">
-                <img src="{% static 'main/images/logo.png' %}" alt="Логотип BAZARSHOP" class="logo-image">
-                BAZARSHOP
-            </a>
-        </div>
-
-        <nav>
-            <ul>
-                <li><a href="{% url 'about' %}">О нас</a></li>
-                <li><a href="{% url 'blog_home' %}">Блог</a></li>
-                <li><a href="{% url 'catalog' %}">Каталог товаров</a></li>
-                <li><a href="{% url 'all_main_categories' %}">Категории</a></li>
-                <li><a href="{% url 'all_categories' %}">Подкатегории</a></li>
-                <li><a href="{% url 'order_history' %}">История заказов</a></li>
-            </ul>
-        </nav>
-
-        <div class="header-right">
-            <!-- Форма поиска -->
-            <div class="search-container">
-                <form action="{% url 'search' %}" method="get">
-                    <input type="text" name="query" placeholder="Поиск товаров..." class="search-input" value="{{ request.GET.query }}">
-                    <button type="submit" class="search-button">
-                        <img src="{% static 'main/images/search-icon.png' %}" alt="Поиск" class="icon">
-                    </button>
-                </form>
-            </div>
+<header class="bg-white py-3 shadow-sm">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="{% url 'home' %}" class="text-decoration-none text-dark d-flex align-items-center">
+            <img src="{% static 'main/images/logo.png' %}" alt="Логотип" class="me-2" style="height: 50px;">
+            <span class="fs-4 fw-bold" style="color: #7a6e5f;">BAZARSHOP</span>
+        </a>
+        <nav class="d-flex gap-3">
+            <a href="{% url 'blog_home' %}" class="text-decoration-none text-muted">Блог</a>
+            <a href="{% url 'catalog' %}" class="text-decoration-none text-muted">Каталог</a>
+            <a href="{% url 'all_main_categories' %}" class="text-decoration-none text-muted">Категории</a>
+            <a href="{% url 'all_categories' %}" class="text-decoration-none text-muted">Подкатегории</a>
 
             {% if user.is_authenticated %}
-                <a href="{% url 'logout' %}" class="btn">Выйти</a>
-                <a href="{% url 'profile' %}" class="profile">
-                    <img src="{% static 'main/images/user.png' %}" alt="Личный кабинет" class="icon">
-                </a>
-            {% else %}
-                <!-- Если пользователь не авторизован -->
-                <a href="{% url 'login' %}" class="btn">Войти</a>
-                <a href="{% url 'register' %}" class="btn">Регистрация</a>
+                <a href="{% url 'order_history' %}" class="text-decoration-none text-muted">История заказов</a>
             {% endif %}
+        </nav>
+        <div class="d-flex align-items-center gap-2">
+            <form action="{% url 'search' %}" method="get" class="d-flex">
+                <input type="text" name="query" placeholder="Искать..." class="form-control me-2" value="{{ request.GET.query }}" style="border-radius: 25px;">
+                <button type="submit" class="btn btn-outline-secondary" style="border-radius: 25px;">🔍</button>
+            </form>
 
-            <!-- Корзина -->
-            <a href="{% url 'view_cart' %}" class="cart">
-                <img src="{% static 'main/images/korzina.png' %}" alt="Корзина" class="icon">
-            </a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm" style="border-radius: 25px;">Выйти</a>
+                <a href="{% url 'profile' %}" class="btn btn-outline-secondary btn-sm" style="border-radius: 25px;">Профиль</a>
+                <a href="{% url 'view_cart' %}" class="btn btn-outline-secondary btn-sm" style="border-radius: 25px;">Корзина</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm" style="border-radius: 25px;">Войти</a>
+                <a href="{% url 'register' %}" class="btn btn-outline-success btn-sm" style="border-radius: 25px;">Регистрация</a>
+            {% endif %}
         </div>
     </div>
 </header>
