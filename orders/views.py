@@ -1,10 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from .models import Cart, CartItem, Order, OrderItem
 from main.models import Product
 from .forms import UpdateCartItemForm, CheckoutForm
 import uuid
+from django.utils import timezone
+
+
+def is_admin(user):
+    return user.is_staff  # Проверка, является ли пользователь администратором
 
 
 @login_required
@@ -122,6 +127,7 @@ def checkout(request):
         'total_price': cart.total_amount
     })
 
+
 @login_required
 def order_history(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
@@ -131,3 +137,64 @@ def order_history(request):
     })
 
 
+@login_required
+def pay_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    if request.method == 'POST':
+        if not order.is_paid:
+            order.status = 'waiting_confirmation'  # Устанавливаем статус "Ожидание подтверждения"
+            order.payment_date = timezone.now()
+            order.payment_amount = order.total_amount
+            order.save()
+
+            messages.success(request, 'Оплата отправлена на проверку. Ожидайте подтверждения администратора.')
+        else:
+            messages.info(request, 'Оплата уже подтверждена.')
+
+        return redirect('home')
+
+    return render(request, 'cart/pay_order.html', {'order': order})
+
+
+
+
+@login_required
+def order_status(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    return render(request, 'cart/order_status.html', {'order': order})
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_order_list(request):
+    orders = Order.objects.all().order_by('-created_at')
+    return render(request, 'cart/admin_order_list.html', {'orders': orders})
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_edit_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        allowed_statuses = ['waiting_confirmation', 'completed', 'canceled']  # Разрешенные статусы
+
+        if new_status in allowed_statuses:
+            order.status = new_status
+            if new_status == 'completed':  # Когда статус "оплачен"
+                order.payment_date = timezone.now()  # Устанавливаем дату оплаты
+                order.payment_amount = order.total_amount  # Устанавливаем сумму оплаты
+            order.save()
+
+            messages.success(request, f'Статус заказа #{order.id} изменен на "{order.get_status_display()}".')
+        else:
+            messages.error(request, 'Недопустимый статус.')
+
+        return redirect('admin_order_list')
+
+    return render(request, 'cart/admin_edit_order.html', {
+        'order': order,
+        'status_choices': Order._meta.get_field('status').choices,
+    })

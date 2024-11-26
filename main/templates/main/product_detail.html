@@ -1,23 +1,49 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Товар: {{ product.name }}{% endblock %}
 
 {% block content %}
-  <h1>{{ product.name }}</h1>
-  <p>{{ product.description }}</p>
+  <div class="container my-5">
+    <h1 class="text-center my-5 display-4 text-uppercase">{{ product.name }}</h1>
 
-  {% if product.picture %}
-    <img src="{{ product.picture.url }}" alt="{{ product.name }}" width="800">
-  {% endif %}
+    <div class="row g-4">
+      <div class="col-lg-5 col-md-6 text-center">
+        {% if product.picture %}
+          <img src="{{ product.picture.url }}" alt="{{ product.name }}" class="img-fluid rounded shadow-sm w-100">
+        {% else %}
+          <img src="{% static 'main/images/default-product.jpg' %}" alt="Товар" class="img-fluid rounded shadow-sm w-100">
+        {% endif %}
+      </div>
 
-  <!-- Отображение цены -->
-  <p class="price">Цена: {{ product.price|floatformat:2 }}₽</p>
+      <div class="col-lg-7 col-md-6">
+        <div class="mb-4 p-3 bg-light rounded shadow-sm">
+          <h3 class="text-muted">Описание</h3>
+          <p class="lead">{{ product.description }}</p>
+        </div>
 
-  {% if user.is_authenticated %}
-    <form method="POST" action="{% url 'add_to_cart' product.id %}">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-primary">Добавить в корзину</button>
-    </form>
-  {% endif %}
+        <div class="mb-4 p-3 bg-light rounded shadow-sm">
+          <h3 class="text-muted">Цена</h3>
+          <p class="price text-primary" style="font-size: 2rem;">{{ product.price|floatformat:2 }}₽</p>
+        </div>
 
+        {% if user.is_authenticated %}
+          <form method="POST" action="{% url 'add_to_cart' product.id %}" class="mb-4">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary btn-lg rounded-pill w-100">Добавить в корзину</button>
+          </form>
+        {% else %}
+          <p class="text-danger">Авторизуйтесь, чтобы добавить товар в корзину.</p>
+        {% endif %}
+
+        {% if user.is_authenticated and user.is_superuser %}
+          <div class="d-flex justify-content-between mt-4">
+            <a href="{% url 'edit_product' product.custom_id %}" class="btn btn-warning rounded-pill">Редактировать</a>
+            <a href="{% url 'delete_product' product.custom_id %}" class="btn btn-danger rounded-pill">Удалить</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 {% endblock %}

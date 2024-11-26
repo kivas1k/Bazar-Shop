@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block content %}
   <h1>История заказов</h1>
 
@@ -10,12 +12,24 @@
           <h3>Заказ #{{ order.id }} от {{ order.created_at }}</h3>
           <p>Адрес: {{ order.address }}</p>
           <p>Телефон: {{ order.phone_number }}</p>
-          <p>Общая сумма: {{ order.total_amount }}</p>
+          <p>Общая сумма: {{ order.total_amount|floatformat:2 }} ₽</p>
+          <p>Статус: {{ order.get_status_display }}</p>
           <ul>
-            {% for item in order.orderitem_set.all %}
-              <li>{{ item.product.name }} - {{ item.quantity }} шт. - {{ item.total_price }}</li>
+            {% for item in order.items.all %}
+              <li>{{ item.product.name }} - {{ item.quantity }} шт. - {{ item.total_price|floatformat:2 }} ₽</li>
             {% endfor %}
           </ul>
+          {% if order.status == 'waiting_confirmation' %}
+            <p>Оплата отправлена на проверку.</p>
+          {% elif order.status == 'completed' %}
+            <p>Заказ успешно оплачен и подтвержден.</p>
+          {% elif order.status == 'canceled' %}
+            <p>Заказ отменен.</p>
+          {% elif order.status == 'created' or order.status == 'pending' %}
+            <p>
+              <a href="{% url 'pay_order' order.id %}" class="btn-pay">Оплатить заказ</a>
+            </p>
+          {% endif %}
         </li>
       {% endfor %}
     </ul>

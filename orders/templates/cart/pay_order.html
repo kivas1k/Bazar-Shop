@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+  <h1>Оплата заказа #{{ order.id }}</h1>
+
+  <!-- Форма для подтверждения оплаты -->
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn-pay">Я оплатил(а)</button>
+  </form>
+
+  <p>После оплаты ваш заказ будет отправлен на проверку.</p>
+
+  <div class="payment-info">
+    <h3>QR-код для оплаты</h3>
+    <img src="{% static 'main/images/qrcode.jpg' %}" alt="QR-код для оплаты" class="qr-code">
+  </div>
+
+  <a href="{% url 'home' %}" class="btn-back">Вернуться на главную</a>
+{% endblock %}

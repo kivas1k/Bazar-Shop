@@ -42,22 +42,39 @@ class CartItem(models.Model):
 
 
 class Order(models.Model):
+    STATUS_CHOICES = [
+        ('created', 'Создано'),
+        ('waiting_confirmation', 'Ожидание подтверждения'),
+        ('completed', 'Оплачено'),
+        ('canceled', 'Отменено'),
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
-    cart_number = models.CharField(max_length=36, unique=True)  # UUID
+    cart_number = models.CharField(max_length=36, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     address = models.TextField(blank=True, null=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
-    status = models.CharField(max_length=20, choices=[('created', 'Created'), ('completed', 'Completed')], default='created')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='created')
+    is_paid = models.BooleanField(default=False)  # Флаг оплаты
+    payment_date = models.DateTimeField(null=True, blank=True)  # Дата оплаты
+    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # Сумма оплаты
 
     def save(self, *args, **kwargs):
-        try:
-            cart = Cart.objects.get(cart_number=self.cart_number)
-            self.total_amount = cart.total_amount
-        except Cart.DoesNotExist:
-            pass
+        if not self.pk:  # Рассчитываем общую сумму только при создании заказа
+            try:
+                cart = Cart.objects.get(cart_number=self.cart_number)
+                self.total_amount = cart.total_amount
+            except Cart.DoesNotExist:
+                pass
+
+        if self.status == 'completed' and not self.payment_date:
+            self.payment_date = self.updated_at
+            self.payment_amount = self.total_amount
+
         super().save(*args, **kwargs)
+
 
     class Meta:
         verbose_name = "Заказ"
@@ -72,8 +89,4 @@ class OrderItem(models.Model):
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return f"{self.product.name} ({self.quantity})"
-
-    class Meta:
-        verbose_name = "Элемент заказа"
-        verbose_name_plural = "Элементы заказа"
+        return f'Товар: {self.product.name}, Количество: {self.quantity}'

@@ -9,8 +9,16 @@ urlpatterns = [
     path('cart/remove/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('cart/clear/', views.clear_cart, name='clear_cart'),
     path('cart/update/<int:item_id>/', views.update_cart_item, name='update_cart_item'),
+
     path('checkout/', views.checkout, name='checkout'),
+
     path('order/history/', views.order_history, name='order_history'),
+
+    path('order/<int:order_id>/pay/', views.pay_order, name='pay_order'),  # Страница оплаты
+    path('order/<int:order_id>/status/', views.order_status, name='order_status'),
+
+    path('admin/orders/', views.admin_order_list, name='admin_order_list'),
+    path('admin/orders/<int:order_id>/edit/', views.admin_edit_order, name='admin_edit_order'),
 ]
 
 if settings.DEBUG:

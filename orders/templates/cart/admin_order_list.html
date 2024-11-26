@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Список заказов{% endblock %}
+
+{% block content %}
+  <h1>Список заказов</h1>
+
+  {% if orders %}
+    <table>
+      <thead>
+        <tr>
+          <th>Номер заказа</th>
+          <th>Дата</th>
+          <th>Общая сумма</th>
+          <th>Статус</th>
+          <th>Дата оплаты</th>
+          <th>Сумма оплаты</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+          <tr>
+            <td>{{ order.cart_number }}</td>
+            <td>{{ order.created_at }}</td>
+            <td>{{ order.total_amount|floatformat:2 }} ₽</td>
+            <td>{{ order.get_status_display }}</td>
+
+            <!-- Отображаем дату и сумму оплаты -->
+            <td>
+              {% if order.payment_date %}
+                {{ order.payment_date|date:"d.m.Y H:i" }}  <!-- Форматируем дату -->
+              {% else %}
+                Не оплачено
+              {% endif %}
+            </td>
+            <td>
+              {% if order.payment_amount %}
+                {{ order.payment_amount|floatformat:2 }} ₽
+              {% else %}
+                Не оплачено
+              {% endif %}
+            </td>
+
+            <td>
+              <a href="{% url 'admin_edit_order' order.id %}">Редактировать</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>Нет заказов.</p>
+  {% endif %}
+{% endblock %}

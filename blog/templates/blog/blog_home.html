@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
@@ -16,32 +18,29 @@
     <div class="row g-4">
       {% for post in posts %}
         <div class="col-md-4 col-sm-6 col-12">
-          <div class="post mb-4 border p-4 rounded shadow-sm bg-white">
-            <h2 class="h4 mb-3">
-              {% if post.custom_id %}
-                <a href="{% url 'blog_post' post.custom_id %}" class="text-decoration-none text-dark">{{ post.title }}</a>
-              {% else %}
-                {{ post.title }}
-              {% endif %}
-            </h2>
+          <!-- Оборачиваем весь блок поста в ссылку -->
+          <a href="{% url 'blog_post' post.custom_id %}" class="text-decoration-none text-dark">
+            <div class="post mb-4 border p-4 rounded shadow-sm bg-white">
+              <h2 class="h4 mb-3">{{ post.title }}</h2>
 
-            {% if post.image %}
-              <div class="mb-3">
-                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid rounded shadow-sm">
-              </div>
-            {% endif %}
-
-            <p class="text-muted mb-3">{{ post.content|truncatewords:20 }}</p>
-
-            {% if user.is_authenticated and user.is_superuser %}
-              {% if post.custom_id %}
-                <div class="post-actions mt-3">
-                  <a href="{% url 'blog_edit' post.custom_id %}" class="btn btn-warning btn-sm rounded-pill">Редактировать</a>
-                  <a href="{% url 'blog_delete' post.custom_id %}" class="btn btn-danger btn-sm rounded-pill">Удалить</a>
+              {% if post.image %}
+                <div class="mb-3">
+                  <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid rounded shadow-sm">
                 </div>
               {% endif %}
-            {% endif %}
-          </div>
+
+              <p class="text-muted mb-3">{{ post.content|truncatewords:20 }}</p>
+
+              {% if user.is_authenticated and user.is_superuser %}
+                {% if post.custom_id %}
+                  <div class="post-actions mt-3">
+                    <a href="{% url 'blog_edit' post.custom_id %}" class="btn btn-warning btn-sm rounded-pill">Редактировать</a>
+                    <a href="{% url 'blog_delete' post.custom_id %}" class="btn btn-danger btn-sm rounded-pill">Удалить</a>
+                  </div>
+                {% endif %}
+              {% endif %}
+            </div>
+          </a>
         </div>
       {% endfor %}
     </div>

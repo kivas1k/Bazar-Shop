@@ -8,6 +8,7 @@
     <!-- Блок для администраторов -->
     {% if user.is_authenticated and user.is_staff %}
         <div class="mb-4">
+            <a href="{% url 'admin_order_list' %}" class="btn btn-outline-primary">Проверить заказы</a>
             <a href="{% url 'add_category' %}" class="btn btn-outline-primary">Добавить категорию</a>
             <a href="{% url 'add_product' %}" class="btn btn-outline-primary">Добавить товар</a>
             <a href="{% url 'add_main_category' %}" class="btn btn-outline-primary">Добавить основную категорию</a>
@@ -42,5 +43,4 @@
             </a>
         </div>
     </div>
-
 {% endblock %}

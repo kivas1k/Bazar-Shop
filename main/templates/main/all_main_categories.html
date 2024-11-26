@@ -1,38 +1,46 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Все основные категории{% endblock %}
 
 {% block content %}
-  <h1>{{ title }}</h1>
+  <div class="container my-5">
+    <h1 class="text-center my-5 display-4 text-uppercase">{{ title }}</h1>
 
-  {% if user.is_authenticated and user.is_superuser %}
-    <a href="{% url 'add_main_category' %}" class="btn btn-primary">Добавить новую основную категорию</a>
-  {% endif %}
-
-  <div class="main-category-list">
-    {% for main_category in main_categories %}
-      <div class="main-category-item">
-        <h2>
-          <a href="{% url 'main_category_detail' main_category.custom_id %}">{{ main_category.name }}</a>
-        </h2>
-
-        {% if main_category.picture %}
-          <div class="main-category-image">
-            <img src="{{ main_category.picture.url }}" alt="{{ main_category.name }}" width="200">
-          </div>
-        {% else %}
-          <p>Изображение не доступно</p>
-        {% endif %}
-
-        <p>{{ main_category.description }}</p>
-
-        {% if user.is_authenticated and user.is_superuser %}
-          <div class="main-category-actions">
-            <a href="{% url 'edit_main_category' main_category.custom_id %}" class="btn btn-warning">Редактировать</a>
-            <a href="{% url 'delete_main_category' main_category.custom_id %}" class="btn btn-danger">Удалить</a>  <!-- Исправлено на custom_id -->
-          </div>
-        {% endif %}
+    {% if user.is_authenticated and user.is_superuser %}
+      <div class="text-center mb-5">
+        <a href="{% url 'add_main_category' %}" class="btn btn-success btn-lg rounded-pill">Добавить новую основную категорию</a>
       </div>
-    {% endfor %}
+    {% endif %}
+
+    <div class="row g-4">
+      {% for main_category in main_categories %}
+        <div class="col-md-4 col-sm-6 col-12">
+          <div class="main-category-item border rounded shadow-sm p-3 h-100 position-relative">
+            <a href="{% url 'main_category_detail' main_category.custom_id %}" class="stretched-link"></a> <!-- Ссылка, растягивающаяся на всю карточку -->
+
+            <h2 class="main-category-title text-center text-uppercase">
+              {{ main_category.name }}
+            </h2>
+
+            {% if main_category.picture %}
+              <img src="{{ main_category.picture.url }}" alt="{{ main_category.name }}" class="img-fluid mb-3 rounded shadow-sm">
+            {% else %}
+              <img src="{% static 'main/images/default-category.jpg' %}" alt="Категория" class="img-fluid mb-3 rounded shadow-sm">
+            {% endif %}
+
+            <p class="text-muted">{{ main_category.description|truncatewords:20 }}</p>
+
+            {% if user.is_authenticated and user.is_superuser %}
+              <div class="main-category-actions mt-3">
+                <a href="{% url 'edit_main_category' main_category.custom_id %}" class="btn btn-warning btn-sm rounded-pill">Редактировать</a>
+                <a href="{% url 'delete_main_category' main_category.custom_id %}" class="btn btn-danger btn-sm rounded-pill">Удалить</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
   </div>
 {% endblock %}

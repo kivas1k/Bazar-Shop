@@ -1,36 +1,51 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Все категории{% endblock %}
 
 {% block content %}
-  <h1>{{ title }}</h1>
+  <div class="container my-5">
+    <!-- Заголовок страницы -->
+    <h1 class="text-center my-5 display-4 text-uppercase">{{ title }}</h1>
 
-  {% if user.is_authenticated and user.is_superuser %}
-    <a href="{% url 'add_category' %}" class="btn btn-primary">Добавить новую категорию</a>
-  {% endif %}
-
-  <div class="category-list">
-    {% for category in categories %}
-      <div class="category-item">
-        <h2>
-          <a href="{% url 'category_detail' category.custom_id %}">{{ category.name }}</a>
-        </h2>
-
-        {% if category.picture %}
-          <div class="category-image">
-            <img src="{{ category.picture.url }}" alt="{{ category.name }}" width="200">
-          </div>
-        {% else %}
-          <p>Изображение не доступно</p>
-        {% endif %}
-
-        {% if user.is_authenticated and user.is_superuser %}
-          <div class="category-actions">
-            <a href="{% url 'edit_category' category.custom_id %}" class="btn btn-warning">Редактировать</a>
-            <a href="{% url 'delete_category' category.custom_id %}" class="btn btn-danger">Удалить</a>
-          </div>
-        {% endif %}
+    {% if user.is_authenticated and user.is_superuser %}
+      <div class="text-center mb-5">
+        <a href="{% url 'add_category' %}" class="btn btn-success btn-lg rounded-pill">Добавить новую категорию</a>
       </div>
-    {% endfor %}
+    {% endif %}
+
+    <div class="row g-4">
+      {% for category in categories %}
+        <div class="col-md-4 col-sm-6 col-12">
+          <div class="category-item border rounded shadow-sm p-3 h-100">
+            <h2 class="category-title">
+              <a href="{% url 'category_detail' category.custom_id %}" class="text-decoration-none text-dark">
+                {{ category.name }}
+              </a>
+            </h2>
+
+            {% if category.picture %}
+              <img src="{{ category.picture.url }}" alt="{{ category.name }}" class="img-fluid mb-3">
+            {% else %}
+              <img src="{% static 'main/images/default-category.jpg' %}" alt="Категория" class="img-fluid mb-3">
+            {% endif %}
+
+            {% if category.description %}
+              <p class="text-muted mb-3">{{ category.description|truncatewords:20 }}</p>
+            {% else %}
+              <p class="text-muted mb-3">Описание отсутствует.</p>
+            {% endif %}
+
+            {% if user.is_authenticated and user.is_superuser %}
+              <div class="category-actions">
+                <a href="{% url 'edit_category' category.custom_id %}" class="btn btn-warning btn-sm rounded-pill">Редактировать</a>
+                <a href="{% url 'delete_category' category.custom_id %}" class="btn btn-danger btn-sm rounded-pill">Удалить</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
   </div>
 {% endblock %}
