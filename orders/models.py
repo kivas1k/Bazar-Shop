@@ -62,7 +62,7 @@ class Order(models.Model):
     payment_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # Сумма оплаты
 
     def save(self, *args, **kwargs):
-        if not self.pk:  # Рассчитываем общую сумму только при создании заказа
+        if not self.pk:
             try:
                 cart = Cart.objects.get(cart_number=self.cart_number)
                 self.total_amount = cart.total_amount
@@ -90,3 +90,9 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f'Товар: {self.product.name}, Количество: {self.quantity}'
+
+
+    class Meta:
+        verbose_name = "Элементы заказа"
+        verbose_name_plural = "Элементы заказа"
+

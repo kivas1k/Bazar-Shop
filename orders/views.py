@@ -9,16 +9,12 @@ from django.utils import timezone
 
 
 def is_admin(user):
-    return user.is_staff  # Проверка, является ли пользователь администратором
+    return user.is_staff
 
 
 @login_required
 def view_cart(request):
-    cart = Cart.objects.filter(user=request.user).first()
-    if not cart:
-        messages.warning(request, 'У вас нет активной корзины.')
-        return redirect('create_new_cart')
-
+    cart, created = Cart.objects.get_or_create(user=request.user)
     items = cart.items.all()
     total_price = cart.total_amount
 
@@ -32,10 +28,7 @@ def view_cart(request):
 @login_required
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-
-    cart = Cart.objects.filter(user=request.user).first()
-    if not cart:
-        cart = Cart.objects.create(user=request.user)
+    cart, created = Cart.objects.get_or_create(user=request.user)
 
     item, created = CartItem.objects.get_or_create(
         cart=cart,
@@ -48,7 +41,6 @@ def add_to_cart(request, product_id):
         item.save()
 
     messages.success(request, f'Товар "{product.name}" добавлен в корзину.')
-
     return redirect('view_cart')
 
 
@@ -143,7 +135,7 @@ def pay_order(request, order_id):
 
     if request.method == 'POST':
         if not order.is_paid:
-            order.status = 'waiting_confirmation'  # Устанавливаем статус "Ожидание подтверждения"
+            order.status = 'waiting_confirmation'
             order.payment_date = timezone.now()
             order.payment_amount = order.total_amount
             order.save()
@@ -179,13 +171,13 @@ def admin_edit_order(request, order_id):
 
     if request.method == 'POST':
         new_status = request.POST.get('status')
-        allowed_statuses = ['waiting_confirmation', 'completed', 'canceled']  # Разрешенные статусы
+        allowed_statuses = ['waiting_confirmation', 'completed', 'canceled']
 
         if new_status in allowed_statuses:
             order.status = new_status
-            if new_status == 'completed':  # Когда статус "оплачен"
-                order.payment_date = timezone.now()  # Устанавливаем дату оплаты
-                order.payment_amount = order.total_amount  # Устанавливаем сумму оплаты
+            if new_status == 'completed':
+                order.payment_date = timezone.now()
+                order.payment_amount = order.total_amount
             order.save()
 
             messages.success(request, f'Статус заказа #{order.id} изменен на "{order.get_status_display()}".')

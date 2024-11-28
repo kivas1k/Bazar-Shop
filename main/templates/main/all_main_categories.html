@@ -18,7 +18,7 @@
       {% for main_category in main_categories %}
         <div class="col-md-4 col-sm-6 col-12">
           <div class="main-category-item border rounded shadow-sm p-3 h-100 position-relative">
-            <a href="{% url 'main_category_detail' main_category.custom_id %}" class="stretched-link"></a> <!-- Ссылка, растягивающаяся на всю карточку -->
+            <a href="{% url 'main_category_detail' main_category.custom_id %}" class="stretched-link"></a>
 
             <h2 class="main-category-title text-center text-uppercase">
               {{ main_category.name }}

@@ -20,6 +20,10 @@ class UserProfile(models.Model):
                 img.thumbnail((300, 300))
                 img.save(self.avatar.path)
 
+    class Meta:
+        verbose_name = "Профиль пользователя"
+        verbose_name_plural = "Профиля пользователей"
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:

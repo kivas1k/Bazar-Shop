@@ -5,7 +5,6 @@
 {% block content %}
   <h1>Оплата заказа #{{ order.id }}</h1>
 
-  <!-- Форма для подтверждения оплаты -->
   <form method="post">
     {% csrf_token %}
     <button type="submit" class="btn-pay">Я оплатил(а)</button>
