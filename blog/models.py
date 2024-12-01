@@ -1,3 +1,4 @@
+import os
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
@@ -14,7 +15,6 @@ class Post(models.Model):
     image = models.ImageField(upload_to='blog_images/', null=True, blank=True)
 
     def clean(self):
-
         if not self.custom_id:
             raise ValidationError('Поле custom_id не может быть пустым')
 
@@ -25,6 +25,11 @@ class Post(models.Model):
             img = Image.open(self.image.path)
             img.thumbnail((800, 800))
             img.save(self.image.path)
+
+    def delete(self, *args, **kwargs):
+        if self.image and os.path.exists(self.image.path):
+            os.remove(self.image.path)
+        super().delete(*args, **kwargs)
 
     def __str__(self):
         return self.title
