@@ -2,20 +2,26 @@
 
 {% load static %}
 
+{% block title %}Оплата заказа #{{ order.id }}{% endblock %}
+
 {% block content %}
-  <h1>Оплата заказа #{{ order.id }}</h1>
+<div class="container my-5">
+    <h1 class="text-center my-5 display-4 text-uppercase">Оплата заказа #{{ order.id }}</h1>
 
-  <form method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn-pay">Я оплатил(а)</button>
-  </form>
+    <p class="text-center mt-3">После оплаты ваш заказ будет отправлен на проверку.</p>
 
-  <p>После оплаты ваш заказ будет отправлен на проверку.</p>
+    <div class="payment-info text-center mt-5">
+        <h3>QR-код для оплаты</h3>
+        <img src="{% static 'main/images/qrcode.jpg' %}" alt="QR-код для оплаты" class="qr-code my-4" style="width: 200px; height: 200px; object-fit: cover;">
+    </div>
 
-  <div class="payment-info">
-    <h3>QR-код для оплаты</h3>
-    <img src="{% static 'main/images/qrcode.jpg' %}" alt="QR-код для оплаты" class="qr-code">
-  </div>
+    <form method="post" class="d-flex justify-content-center mt-4">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success rounded-pill" style="padding: 10px 30px;">Я оплатил(а)</button>
+    </form>
 
-  <a href="{% url 'home' %}" class="btn-back">Вернуться на главную</a>
+    <div class="text-center mt-4">
+        <a href="{% url 'home' %}" class="btn btn-primary">Вернуться на главную</a>
+    </div>
+</div>
 {% endblock %}

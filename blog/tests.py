@@ -1,3 +1,5 @@
+#django mock доделать
+
 import os
 import django
 
@@ -12,6 +14,9 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth.models import User
 from django.utils.translation import override
 from .models import Post
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bazarshop.settings')
+django.setup()
 
 
 class BlogTests(TestCase):

@@ -7,18 +7,15 @@
 {% block content %}
   <h1>Редактировать заказ #{{ order.id }}</h1>
 
-  <form method="post">
+ <form method="post">
     {% csrf_token %}
-
     <label for="status">Статус заказа:</label>
     <select name="status" id="status">
       {% for value, label in status_choices %}
-        {% if value in "waiting_confirmation completed canceled" %}
-          <option value="{{ value }}" {% if value == order.status %}selected{% endif %}>{{ label }}</option>
-        {% endif %}
+        <option value="{{ value }}" {% if value == order.status %}selected{% endif %}>{{ label }}</option>
       {% endfor %}
     </select>
-
     <button type="submit">Обновить</button>
-  </form>
+</form>
+
 {% endblock %}

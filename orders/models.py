@@ -47,6 +47,8 @@ class Order(models.Model):
         ('waiting_confirmation', 'Ожидание подтверждения'),
         ('completed', 'Оплачено'),
         ('canceled', 'Отменено'),
+        ('shipped', 'Отправлено'),
+        ('delivered_signed', 'Доставлено под роспись'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
@@ -57,9 +59,9 @@ class Order(models.Model):
     address = models.TextField(blank=True, null=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='created')
-    is_paid = models.BooleanField(default=False)  # Флаг оплаты
-    payment_date = models.DateTimeField(null=True, blank=True)  # Дата оплаты
-    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # Сумма оплаты
+    is_paid = models.BooleanField(default=False)
+    payment_date = models.DateTimeField(null=True, blank=True)
+    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -74,6 +76,11 @@ class Order(models.Model):
             self.payment_amount = self.total_amount
 
         super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "Заказ"
+        verbose_name_plural = "Заказы"
+
 
 
     class Meta:

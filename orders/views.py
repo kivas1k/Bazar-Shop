@@ -7,8 +7,6 @@ from .forms import UpdateCartItemForm, CheckoutForm
 import uuid
 from django.utils import timezone
 
-#Нужно доделать оплату. Нужно сделать так чтобы после того как как пользователь оплатил заказ писалось что ваш заказ проходит проверку, после того как админ подтвердил заказ у пользователя отобразится что его заказ был отправлен и в течении недели будет доставлен. После того как товар будет доставлен чтобы пользователь мог как это это подтвердить, что товар доставлен. Нужно добавить какуе нибудь кнопку для подтвержения. Вот файлы views
-
 def is_admin(user):
     return user.is_staff
 
@@ -172,7 +170,7 @@ def admin_edit_order(request, order_id):
 
     if request.method == 'POST':
         new_status = request.POST.get('status')
-        allowed_statuses = ['waiting_confirmation', 'completed', 'canceled']
+        allowed_statuses = ['waiting_confirmation', 'completed', 'canceled', 'shipped', 'delivered_signed']
 
         if new_status in allowed_statuses:
             order.status = new_status

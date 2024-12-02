@@ -1,16 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Профиль пользователя</h2>
-<p><strong>Имя пользователя:</strong> {{ user.username }}</p>
-<p><strong>Email:</strong> {{ user.email }}</p>
-<p><strong>О себе:</strong> {{ user_profile.bio }}</p>
+<div class="container my-5">
+    <h2 class="text-center my-5 display-4 text-uppercase">Профиль пользователя</h2>
 
-{% if user_profile.avatar %}
-    <img src="{{ user_profile.avatar.url }}" alt="Avatar" width="100">
-{% else %}
-    <p>Аватар не установлен.</p>
-{% endif %}
+    <div class="card p-4 shadow rounded bg-light">
+        <div class="mb-3">
+            <p><strong>Имя пользователя:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>О себе:</strong> {{ user_profile.bio }}</p>
+        </div>
 
-<a href="{% url 'profile_edit' %}">Редактировать профиль</a>
+        <div class="mb-4">
+            <strong>Аватар:</strong>
+            {% if user_profile.avatar %}
+                <div class="mb-3">
+                    <img src="{{ user_profile.avatar.url }}" alt="Avatar" width="100" class="img-thumbnail">
+                </div>
+            {% else %}
+                <p>Аватар не установлен.</p>
+            {% endif %}
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'profile_edit' %}" class="btn btn-primary btn-md">Редактировать профиль</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

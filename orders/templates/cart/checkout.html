@@ -5,47 +5,68 @@
 {% block title %}Оформление заказа{% endblock %}
 
 {% block content %}
-  <div class="checkout-container">
-    <h1>Оформление заказа</h1>
+<div class="container my-5">
+    <h1 class="text-center my-5 display-4 text-uppercase">Оформление заказа</h1>
 
-    <form method="POST" action="{% url 'checkout' %}" class="checkout-form">
-      {% csrf_token %}
-      <fieldset>
-        <legend>Детали заказа</legend>
-        {{ form.as_p }}
-      </fieldset>
-      <button type="submit" class="btn-submit">Оформить заказ</button>
+    <form method="POST" action="{% url 'checkout' %}" class="p-4 shadow rounded bg-light">
+        {% csrf_token %}
+        <fieldset>
+            <legend class="mb-4 text-primary fw-bold">Детали заказа</legend>
+            {{ form.as_p }}
+        </fieldset>
+
+        {% if form.errors %}
+        <div class="alert alert-danger mt-3">
+            <p>Пожалуйста, исправьте ошибки в форме:</p>
+            <ul>
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ field.label }}: {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-success w-100 mt-3 rounded-pill">Оформить заказ</button>
     </form>
 
-    {% if form.errors %}
-      <div class="errors">
-        <p>Пожалуйста, исправьте ошибки в форме.</p>
-      </div>
-    {% endif %}
-
-    <div class="order-summary">
-      <h2>Ваши товары</h2>
-      <table class="order-items-table">
-        <thead>
-          <tr>
-            <th>Товар</th>
-            <th>Количество</th>
-            <th>Цена</th>
-            <th>Сумма</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in items %}
-            <tr>
-              <td>{{ item.product.name }}</td>
-              <td>{{ item.quantity }}</td>
-              <td>{{ item.price|floatformat:2 }} ₽</td>
-              <td>{{ item.total_price|floatformat:2 }} ₽</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      <p><strong>Общая сумма:</strong> {{ total_price|floatformat:2 }} ₽</p>
+    <div class="order-summary mt-5">
+        <h2 class="text-center text-uppercase">Ваши товары</h2>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>Товар</th>
+                        <th>Количество</th>
+                        <th>Цена</th>
+                        <th>Сумма</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td class="text-center">
+                            <div class="d-flex align-items-center">
+                                <img
+                                    src="{% if item.product.picture %}{{ item.product.picture.url }}{% else %}{% static 'main/images/default-product.jpg' %}{% endif %}"
+                                    alt="{{ item.product.name }}"
+                                    class="img-thumbnail me-3"
+                                    style="width: 80px; height: 80px; object-fit: cover;">
+                                <span>{{ item.product.name }}</span>
+                            </div>
+                        </td>
+                        <td class="text-center">{{ item.quantity }}</td>
+                        <td class="text-center">{{ item.price|floatformat:2 }} ₽</td>
+                        <td class="text-center">{{ item.total_price|floatformat:2 }} ₽</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="text-end mt-4">
+            <h3 class="text-success">Общая сумма: {{ total_price|floatformat:2 }} ₽</h3>
+        </div>
     </div>
-  </div>
+</div>
 {% endblock %}
