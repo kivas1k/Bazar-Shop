@@ -4,7 +4,6 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from PIL import Image
 
-
 class Post(models.Model):
     custom_id = models.CharField(max_length=255, unique=True)
     title = models.CharField(max_length=255)

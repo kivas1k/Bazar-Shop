@@ -5,20 +5,16 @@ from .forms import PostForm
 
 menu = ["О нас", "Блог", "Каталог товаров", "Категории", "Подкатегории"]
 
-
 def is_admin(user):
     return user.is_superuser
-
 
 def blog_home(request):
     posts = Post.objects.all()
     return render(request, 'blog/blog_home.html', {'title': 'Блог', 'menu': menu, 'posts': posts})
 
-
 def blog_post(request, custom_id):
     post = get_object_or_404(Post, custom_id=custom_id)
     return render(request, 'blog/blog_post.html', {'title': post.title, 'menu': menu, 'post': post})
-
 
 @login_required
 @user_passes_test(is_admin)
@@ -34,7 +30,6 @@ def blog_create(request):
         form = PostForm()
     return render(request, 'blog/blog_create.html', {'title': 'Создать статью', 'menu': menu, 'form': form})
 
-
 @login_required
 @user_passes_test(is_admin)
 def blog_edit(request, custom_id):
@@ -47,7 +42,6 @@ def blog_edit(request, custom_id):
     else:
         form = PostForm(instance=post)
     return render(request, 'blog/blog_edit.html', {'title': 'Редактировать статью', 'menu': menu, 'form': form})
-
 
 @login_required
 @user_passes_test(is_admin)

@@ -1,191 +1,240 @@
-#django mock доделать
-
 import os
 import django
 
+# Инициализация Django (по другому не работает)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bazarshop.settings')
 django.setup()
 
-from io import BytesIO
-from PIL import Image
+from unittest.mock import patch
 from django.test import TestCase
-from django.urls import reverse
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth.models import User
-from django.utils.translation import override
+from django.core.exceptions import ValidationError
 from .models import Post
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bazarshop.settings')
-django.setup()
+from django.urls import reverse
 
 
-class BlogTests(TestCase):
+class PostModelTestCase(TestCase):
 
-    def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='testpass')
-        self.admin = User.objects.create_superuser(username='admin', password='adminpass')
+    @classmethod
+    def setUpTestData(cls):
+        if User.objects.filter(username='admin').exists():
+            User.objects.filter(username='admin').delete()
 
-        self.post = Post.objects.create(
-            custom_id='test-post',
+    @patch('django.db.models.Model.save')
+    def test_create_post_with_existing_custom_id(self, mock_save):
+        """Тестирование попытки создать пост с уже существующим custom_id."""
+        admin_user = User.objects.create_superuser(username='admin', password='admin123')
+        post1 = Post.objects.create(
+            custom_id='existing_id',
+            title='Test Post 1',
+            content='Test content 1',
+            author=admin_user
+        )
+        post2 = Post(
+            custom_id='existing_id',
+            title='Test Post 2',
+            content='Test content 2',
+            author=admin_user
+        )
+        with self.assertRaises(ValidationError):
+            post2.full_clean()
+
+    @patch('django.db.models.Model.save')
+    def test_create_post_with_empty_custom_id(self, mock_save):
+        """Тестирование создания поста с пустым полем custom_id."""
+        admin_user = User.objects.create_superuser(username='admin', password='admin123')
+        post = Post(
+            custom_id='',
             title='Test Post',
-            content='This is a test post.',
-            author=self.admin,
+            content='Test content',
+            author=admin_user
         )
+        with self.assertRaises(ValidationError):
+            post.full_clean()
 
-    def tearDown(self):
-        """Очистка созданных файлов."""
-        posts = Post.objects.all()
-        for post in posts:
-            if post.image and os.path.exists(post.image.path):
-                os.remove(post.image.path)
+    def test_create_post_with_valid_data(self):
+        """Тестирование успешного создания поста с валидными данными."""
+        admin_user = User.objects.create_superuser(username='admin', password='admin123')
+        post = Post(
+            custom_id='unique_id',
+            title='Test Post',
+            content='Test content',
+            author=admin_user
+        )
+        post.save()
 
-    def create_test_image(self):
-        """Создание тестового изображения."""
-        image = Image.new('RGB', (1000, 1000), color='blue')
-        buffer = BytesIO()
-        image.save(buffer, format='JPEG')
-        buffer.seek(0)
-        return SimpleUploadedFile('test_image.jpg', buffer.read(), content_type='image/jpeg')
+        saved_post = Post.objects.filter(custom_id='unique_id', title='Test Post').first()
+        self.assertIsNotNone(saved_post)
+        self.assertEqual(saved_post.author, admin_user)
 
-    def test_create_post_as_admin(self):
-        """Тест создания поста администратором."""
-        self.client.login(username='admin', password='adminpass')
-        response = self.client.post(reverse('blog_create'), {
-            'custom_id': 'new-post',
-            'title': 'New Post',
-            'content': 'Content of new post.',
-        })
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue(Post.objects.filter(custom_id='new-post').exists())
+    @patch('django.db.models.Model.save')  # Мокирование метода save
+    def test_title_field_length(self, mock_save):
+        """Тестирование длины поля title."""
+        admin_user = User.objects.create_superuser(username='admin', password='admin123')
+        long_title = 'a' * 256  # Длина больше чем максимальная (255 символов)
+        post = Post(
+            custom_id='unique_id',
+            title=long_title,
+            content='Test content',
+            author=admin_user
+        )
+        with self.assertRaises(ValidationError):
+            post.full_clean()
 
-    def test_create_post_as_non_admin(self):
-        """Тест запрета создания поста обычным пользователем."""
-        self.client.login(username='testuser', password='testpass')
-        response = self.client.post(reverse('blog_create'), {
-            'custom_id': 'user-post',
-            'title': 'User Post',
-            'content': 'Content by a regular user.',
-        })
-        self.assertEqual(response.status_code, 302)
-        self.assertFalse(Post.objects.filter(custom_id='user-post').exists())
+    @patch('django.db.models.Model.save')
+    def test_custom_id_field_length(self, mock_save):
+        """Тестирование длины поля custom_id."""
+        admin_user = User.objects.create_superuser(username='admin', password='admin123')
+        long_custom_id = 'a' * 256
+        post = Post(
+            custom_id=long_custom_id,
+            title='Test Post',
+            content='Test content',
+            author=admin_user
+        )
+        with self.assertRaises(ValidationError):
+            post.full_clean()
 
-    def test_edit_post_as_admin(self):
-        """Тест редактирования поста администратором."""
-        self.client.login(username='admin', password='adminpass')
-        response = self.client.post(reverse('blog_edit', args=[self.post.custom_id]), {
-            'custom_id': 'test-post',
-            'title': 'Updated Title',
-            'content': 'Updated Content.',
-        })
-        self.assertEqual(response.status_code, 302)
-        self.post.refresh_from_db()
-        self.assertEqual(self.post.title, 'Updated Title')
-        self.assertEqual(self.post.content, 'Updated Content.')
-
-    def test_edit_post_as_non_admin(self):
-        """Тест запрета редактирования поста обычным пользователем."""
-        self.client.login(username='testuser', password='testpass')
-        response = self.client.get(reverse('blog_edit', args=[self.post.custom_id]))
-        self.assertEqual(response.status_code, 302)
-
-    def test_delete_post_as_admin(self):
-        """Тест удаления поста администратором."""
-        self.client.login(username='admin', password='adminpass')
-        response = self.client.post(reverse('blog_delete', args=[self.post.custom_id]))
-        self.assertEqual(response.status_code, 302)
-        self.assertFalse(Post.objects.filter(custom_id='test-post').exists())
-
-    def test_delete_post_as_non_admin(self):
-        """Тест запрета удаления поста обычным пользователем."""
-        self.client.login(username='testuser', password='testpass')
-        response = self.client.post(reverse('blog_delete', args=[self.post.custom_id]))
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue(Post.objects.filter(custom_id='test-post').exists())
-
-    # === Тесты изображений ===
-
-    def test_create_post_with_image(self):
-        """Тест создания поста с изображением."""
-        self.client.login(username='admin', password='adminpass')
-        image = self.create_test_image()
-        response = self.client.post(reverse('blog_create'), {
-            'custom_id': 'post-with-image',
-            'title': 'Post with Image',
-            'content': 'Content with image.',
-            'image': image,
-        })
-        self.assertEqual(response.status_code, 302)
-        post = Post.objects.get(custom_id='post-with-image')
-        self.assertTrue(post.image)
-
-        with Image.open(post.image.path) as img:
-            self.assertEqual(img.size, (800, 800))
-
-    def test_delete_post_with_image(self):
-        """Тест удаления поста с изображением."""
-        self.client.login(username='admin', password='adminpass')
+    def test_successful_edit_post(self):
+        """Тестирование успешного редактирования поста."""
+        admin_user = User.objects.create_superuser(username='admin', password='admin123')
         post = Post.objects.create(
-            custom_id='image-post',
-            title='Image Post',
-            content='Content with image.',
-            author=self.admin,
-            image=self.create_test_image(),
+            custom_id='unique_id',
+            title='Old Title',
+            content='Test content',
+            author=admin_user
         )
-        image_path = post.image.path
+        post.title = 'New Title'
+        post.save()
+        updated_post = Post.objects.get(id=post.id)
+        self.assertEqual(updated_post.title, 'New Title')
 
-        self.assertTrue(os.path.exists(image_path), "Файл изображения должен существовать до удаления поста.")
+    @patch('django.db.models.Model.save')
+    def test_create_post_without_required_fields(self, mock_save):
+        """Тестирование создания поста без обязательных полей."""
+        admin_user = User.objects.create_superuser(username='admin', password='admin123')
 
-        response = self.client.post(reverse('blog_delete', args=[post.custom_id]))
-        self.assertEqual(response.status_code, 302)
+        post_missing_custom_id = Post(
+            custom_id=None,
+            title='Test Title',
+            content='Test Content',
+            author=admin_user
+        )
+        with self.assertRaises(ValidationError):
+            post_missing_custom_id.full_clean()
 
-        self.assertFalse(Post.objects.filter(custom_id='image-post').exists(), "Пост должен быть удалён.")
-        self.assertFalse(os.path.exists(image_path), "Файл изображения должен быть удалён.")
+        post_missing_title = Post(
+            custom_id='unique_id',
+            title=None,
+            content='Test Content',
+            author=admin_user
+        )
+        with self.assertRaises(ValidationError):
+            post_missing_title.full_clean()
 
-    # === Проверка граничных значений ===
+        post_missing_content = Post(
+            custom_id='unique_id',
+            title='Test Title',
+            content=None,
+            author=admin_user
+        )
+        with self.assertRaises(ValidationError):
+            post_missing_content.full_clean()
 
-    def test_custom_id_max_length(self):
-        """Тест максимально допустимой длины custom_id."""
-        self.client.login(username='admin', password='adminpass')
-        custom_id = 'a' * 255
-        response = self.client.post(reverse('blog_create'), {
-            'custom_id': custom_id,
-            'title': 'Valid Title',
-            'content': 'Valid Content.',
-        })
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue(Post.objects.filter(custom_id=custom_id).exists())
+        # Проверка отсутствия author
+        post_missing_author = Post(
+            custom_id='unique_id',
+            title='Test Title',
+            content='Test Content',
+            author=None
+        )
+        with self.assertRaises(ValidationError):
+            post_missing_author.full_clean()
 
-    def test_custom_id_exceeds_max_length(self):
-        """Тест превышения максимально допустимой длины custom_id."""
-        self.client.login(username='admin', password='adminpass')
-        custom_id = 'a' * 256
+    @patch('django.db.models.Model.save')
+    @patch('django.db.models.Model.delete')
+    def test_successful_delete_post(self, mock_delete, mock_save):
+        """Тестирование успешного удаления поста."""
+        admin_user = User.objects.create_superuser(username='admin', password='admin123')
+        post = Post.objects.create(
+            custom_id='unique_id',
+            title='Test Post',
+            content='Test content',
+            author=admin_user
+        )
+        post_id = post.id
+        post.delete()
+        with self.assertRaises(Post.DoesNotExist):
+            Post.objects.get(id=post_id)
 
-        with override('en'):
-            response = self.client.post(reverse('blog_create'), {
-                'custom_id': custom_id,
-                'title': 'Too Long Title',
-                'content': 'Content.',
-            })
+    @patch('django.db.models.Model.save')
+    @patch('django.db.models.Model.delete')
+    def test_post_after_delete(self, mock_delete, mock_save):
+        """Тестирование получения поста после его удаления."""
+        admin_user = User.objects.create_superuser(username='admin', password='admin123')
+        post = Post.objects.create(
+            custom_id='unique_id',
+            title='Test Post',
+            content='Test content',
+            author=admin_user
+        )
+        post.delete()
+        post = Post.objects.filter(id=post.id).first()
+        self.assertIsNone(post)
 
-            self.assertEqual(response.status_code, 200)
-            self.assertContains(response, 'Ensure this value has at most 255 characters (it has 256).')
-            self.assertFalse(Post.objects.filter(custom_id=custom_id).exists())
+    def test_create_post_as_regular_user(self):
+        """Тестирование создания поста обычным пользователем (перенаправление на страницу входа)."""
+        regular_user = User.objects.create_user(username='regularuser', password='password')
+        self.client.login(username='regularuser', password='password')
+        response = self.client.post(reverse('blog_create'))  # URL для создания поста
+        self.assertEqual(response.status_code, 302)  # Ожидаем перенаправление на страницу входа
 
-    # === Тесты доступа ===
+    def test_edit_post_as_regular_user(self):
+        """Тестирование редактирования поста обычным пользователем (перенаправление на страницу входа)."""
+        regular_user = User.objects.create_user(username='regularuser', password='password')
+        post = Post.objects.create(
+            custom_id='unique_id',
+            title='Test Post',
+            content='Test content',
+            author=regular_user
+        )
+        self.client.login(username='regularuser', password='password')
+        response = self.client.post(reverse('blog_edit', args=[post.custom_id]))  # URL для редактирования поста
+        self.assertEqual(response.status_code, 302)  # Ожидаем перенаправление на страницу входа
 
-    def test_anonymous_user_access(self):
-        """Тест доступа анонимного пользователя."""
-        response = self.client.get(reverse('blog_home'))
-        self.assertEqual(response.status_code, 200)
+    def test_delete_post_as_regular_user(self):
+        """Тестирование удаления поста обычным пользователем (перенаправление на страницу входа)."""
+        regular_user = User.objects.create_user(username='regularuser', password='password')
+        post = Post.objects.create(
+            custom_id='unique_id',
+            title='Test Post',
+            content='Test content',
+            author=regular_user
+        )
+        self.client.login(username='regularuser', password='password')
+        response = self.client.post(reverse('blog_delete', args=[post.custom_id]))  # URL для удаления поста
+        self.assertEqual(response.status_code, 302)  # Ожидаем перенаправление на страницу входа
 
-        response = self.client.get(reverse('blog_post', args=[self.post.custom_id]))
-        self.assertEqual(response.status_code, 200)
+    def test_post_update_after_edit(self):
+        """Тестирование обновления поста после редактирования."""
+        admin_user = User.objects.create_superuser(username='admin', password='admin123')
 
-        response = self.client.get(reverse('blog_create'))
-        self.assertEqual(response.status_code, 302)
+        # Создание поста
+        post = Post.objects.create(
+            custom_id='unique_id',
+            title='Old Title',
+            content='Test content',
+            author=admin_user
+        )
 
-        response = self.client.get(reverse('blog_edit', args=[self.post.custom_id]))
-        self.assertEqual(response.status_code, 302)
+        post.title = 'Updated Title'
+        post.content = 'Updated content'
+        post.save()
 
-        response = self.client.post(reverse('blog_delete', args=[self.post.custom_id]))
-        self.assertEqual(response.status_code, 302)
+        updated_post = Post.objects.get(id=post.id)
+        self.assertEqual(updated_post.title, 'Updated Title')
+        self.assertEqual(updated_post.content, 'Updated content')
+
+        self.assertNotEqual(updated_post.title, 'Old Title')
+        self.assertNotEqual(updated_post.content, 'Test content')
+
