@@ -67,33 +67,56 @@ class PostModelTestCase(TestCase):
         self.assertIsNotNone(saved_post)
         self.assertEqual(saved_post.author, admin_user)
 
-    @patch('django.db.models.Model.save')  # Мокирование метода save
+    @patch('django.db.models.Model.save')
     def test_title_field_length(self, mock_save):
-        """Тестирование длины поля title."""
+        """Тестирование минимальной и максимальной длины поля title."""
         admin_user = User.objects.create_superuser(username='admin', password='admin123')
-        long_title = 'a' * 256  # Длина больше чем максимальная (255 символов)
-        post = Post(
-            custom_id='unique_id',
+
+        short_title = ''
+        post_min = Post(
+            custom_id='unique_id_min',
+            title=short_title,
+            content='Test content',
+            author=admin_user
+        )
+        with self.assertRaises(ValidationError):
+            post_min.full_clean()
+
+        long_title = 'a' * 256
+        post_max = Post(
+            custom_id='unique_id_max',
             title=long_title,
             content='Test content',
             author=admin_user
         )
         with self.assertRaises(ValidationError):
-            post.full_clean()
+            post_max.full_clean()
 
     @patch('django.db.models.Model.save')
     def test_custom_id_field_length(self, mock_save):
-        """Тестирование длины поля custom_id."""
+        """Тестирование минимальной и максимальной длины поля custom_id."""
         admin_user = User.objects.create_superuser(username='admin', password='admin123')
+
+        # Пустое значение custom_id
+        short_custom_id = ''
+        post_min = Post(
+            custom_id=short_custom_id,
+            title='Test Post',
+            content='Test content',
+            author=admin_user
+        )
+        with self.assertRaises(ValidationError):
+            post_min.full_clean()
+
         long_custom_id = 'a' * 256
-        post = Post(
+        post_max = Post(
             custom_id=long_custom_id,
             title='Test Post',
             content='Test content',
             author=admin_user
         )
         with self.assertRaises(ValidationError):
-            post.full_clean()
+            post_max.full_clean()
 
     def test_successful_edit_post(self):
         """Тестирование успешного редактирования поста."""
@@ -105,8 +128,8 @@ class PostModelTestCase(TestCase):
             author=admin_user
         )
         post.title = 'New Title'
-        post.save()
-        updated_post = Post.objects.get(id=post.id)
+        post.save()  # Сохраняем изменения
+        updated_post = Post.objects.get(id=post.id)  # Получаем обновленный пост
         self.assertEqual(updated_post.title, 'New Title')
 
     @patch('django.db.models.Model.save')
@@ -132,27 +155,26 @@ class PostModelTestCase(TestCase):
         with self.assertRaises(ValidationError):
             post_missing_title.full_clean()
 
-        post_missing_content = Post(
+        post_too_long_title = Post(
             custom_id='unique_id',
-            title='Test Title',
-            content=None,
+            title='a' * 256,
+            content='Test Content',
             author=admin_user
         )
         with self.assertRaises(ValidationError):
-            post_missing_content.full_clean()
+            post_too_long_title.full_clean()
 
-        # Проверка отсутствия author
-        post_missing_author = Post(
+        post_empty_title = Post(
             custom_id='unique_id',
-            title='Test Title',
+            title='',
             content='Test Content',
-            author=None
+            author=admin_user
         )
         with self.assertRaises(ValidationError):
-            post_missing_author.full_clean()
+            post_empty_title.full_clean()
 
-    @patch('django.db.models.Model.save')
     @patch('django.db.models.Model.delete')
+    @patch('django.db.models.Model.save')
     def test_successful_delete_post(self, mock_delete, mock_save):
         """Тестирование успешного удаления поста."""
         admin_user = User.objects.create_superuser(username='admin', password='admin123')
@@ -167,9 +189,7 @@ class PostModelTestCase(TestCase):
         with self.assertRaises(Post.DoesNotExist):
             Post.objects.get(id=post_id)
 
-    @patch('django.db.models.Model.save')
-    @patch('django.db.models.Model.delete')
-    def test_post_after_delete(self, mock_delete, mock_save):
+    def test_post_after_delete(self):
         """Тестирование получения поста после его удаления."""
         admin_user = User.objects.create_superuser(username='admin', password='admin123')
         post = Post.objects.create(
@@ -178,16 +198,17 @@ class PostModelTestCase(TestCase):
             content='Test content',
             author=admin_user
         )
+        post_id = post.id
         post.delete()
-        post = Post.objects.filter(id=post.id).first()
+        post = Post.objects.filter(id=post_id).first()
         self.assertIsNone(post)
 
     def test_create_post_as_regular_user(self):
         """Тестирование создания поста обычным пользователем (перенаправление на страницу входа)."""
         regular_user = User.objects.create_user(username='regularuser', password='password')
         self.client.login(username='regularuser', password='password')
-        response = self.client.post(reverse('blog_create'))  # URL для создания поста
-        self.assertEqual(response.status_code, 302)  # Ожидаем перенаправление на страницу входа
+        response = self.client.post(reverse('blog_create'))
+        self.assertEqual(response.status_code, 302)
 
     def test_edit_post_as_regular_user(self):
         """Тестирование редактирования поста обычным пользователем (перенаправление на страницу входа)."""
@@ -199,8 +220,8 @@ class PostModelTestCase(TestCase):
             author=regular_user
         )
         self.client.login(username='regularuser', password='password')
-        response = self.client.post(reverse('blog_edit', args=[post.custom_id]))  # URL для редактирования поста
-        self.assertEqual(response.status_code, 302)  # Ожидаем перенаправление на страницу входа
+        response = self.client.post(reverse('blog_edit', args=[post.custom_id]))
+        self.assertEqual(response.status_code, 302)
 
     def test_delete_post_as_regular_user(self):
         """Тестирование удаления поста обычным пользователем (перенаправление на страницу входа)."""
@@ -212,14 +233,13 @@ class PostModelTestCase(TestCase):
             author=regular_user
         )
         self.client.login(username='regularuser', password='password')
-        response = self.client.post(reverse('blog_delete', args=[post.custom_id]))  # URL для удаления поста
-        self.assertEqual(response.status_code, 302)  # Ожидаем перенаправление на страницу входа
+        response = self.client.post(reverse('blog_delete', args=[post.custom_id]))
+        self.assertEqual(response.status_code, 302)
 
     def test_post_update_after_edit(self):
         """Тестирование обновления поста после редактирования."""
         admin_user = User.objects.create_superuser(username='admin', password='admin123')
 
-        # Создание поста
         post = Post.objects.create(
             custom_id='unique_id',
             title='Old Title',
@@ -237,4 +257,3 @@ class PostModelTestCase(TestCase):
 
         self.assertNotEqual(updated_post.title, 'Old Title')
         self.assertNotEqual(updated_post.content, 'Test content')
-

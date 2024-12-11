@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import unittest
-import time  # Импортируем time для задержек
+import time
 
 
 class BlogUITests(unittest.TestCase):
@@ -19,26 +19,21 @@ class BlogUITests(unittest.TestCase):
         driver = self.driver
         driver.get(self.base_url)
 
-        # Явное ожидание наличия заголовка на главной странице
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.TAG_NAME, 'h1'))
         )
 
-        # Задержка для просмотра загрузки главной страницы
         time.sleep(2)
 
         blog_link = driver.find_element(By.LINK_TEXT, 'Блог')
         blog_link.click()
 
-        # Задержка перед проверкой страницы блога
         time.sleep(2)
 
-        # Явное ожидание заголовка на странице блога
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.TAG_NAME, 'h1'))
         )
 
-        # Задержка для просмотра загрузки страницы блога
         time.sleep(2)
 
         blog_title = driver.find_element(By.TAG_NAME, 'h1').text
@@ -49,18 +44,14 @@ class BlogUITests(unittest.TestCase):
         driver = self.driver
         invalid_custom_id = 'invalid_custom_id'
 
-        # Формируем URL для некорректного ID
         post_url = f'{self.base_url}blog/post/{invalid_custom_id}/'
 
-        # Переход по URL с некорректным ID
         driver.get(post_url)
 
-        # Явное ожидание загрузки страницы
         time.sleep(2)
 
-        # Проверка, что на странице отображается ошибка 404
         error_message = driver.find_element(By.TAG_NAME, 'h1').text
-        self.assertIn('Page not found', error_message)  # Изменено на текст "Page not found"
+        self.assertIn('Page not found', error_message)
 
     def tearDown(self):
         """Закрытие браузера после тестов."""
