@@ -97,7 +97,6 @@ class PostModelTestCase(TestCase):
         """Тестирование минимальной и максимальной длины поля custom_id."""
         admin_user = User.objects.create_superuser(username='admin', password='admin123')
 
-        # Пустое значение custom_id
         short_custom_id = ''
         post_min = Post(
             custom_id=short_custom_id,
@@ -108,7 +107,7 @@ class PostModelTestCase(TestCase):
         with self.assertRaises(ValidationError):
             post_min.full_clean()
 
-        long_custom_id = 'a' * 256
+        long_custom_id = 'a' * 10
         post_max = Post(
             custom_id=long_custom_id,
             title='Test Post',
@@ -128,8 +127,8 @@ class PostModelTestCase(TestCase):
             author=admin_user
         )
         post.title = 'New Title'
-        post.save()  # Сохраняем изменения
-        updated_post = Post.objects.get(id=post.id)  # Получаем обновленный пост
+        post.save()
+        updated_post = Post.objects.get(id=post.id)
         self.assertEqual(updated_post.title, 'New Title')
 
     @patch('django.db.models.Model.save')

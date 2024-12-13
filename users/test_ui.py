@@ -50,6 +50,34 @@ class UITests(unittest.TestCase):
         login_button = driver.find_element(By.XPATH, '//button[contains(text(), "Войти")]')
         self.assertIsNotNone(login_button)
 
+    def test_access_profile_with_auth(self):
+        """TDB-C-33: Проверка доступа к странице профиля авторизованным пользователем."""
+        driver = self.driver
+        driver.get(f'{self.base_url}users/login/')
+
+        username_field = driver.find_element(By.NAME, 'username')
+        password_field = driver.find_element(By.NAME, 'password')
+        submit_button = driver.find_element(By.XPATH, '//button[@type="submit"]')
+
+        username_field.send_keys(self.username)
+        password_field.send_keys('password123')
+        submit_button.click()
+
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//a[contains(text(), 'Выйти')]"))
+        )
+
+        profile_url = f'{self.base_url}users/profile/'
+        driver.get(profile_url)
+
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//h2[contains(text(), 'Профиль пользователя')]"))
+        )
+
+        edit_button = driver.find_element(By.XPATH,
+                                          "//a[contains(@class, 'btn-primary') and contains(text(), 'Редактировать профиль')]")
+        self.assertIsNotNone(edit_button, "Кнопка редактирования профиля отсутствует.")
+
     def test_logout_functionality(self):
         """TDB-C-28: Функция выхода из системы."""
         driver = self.driver
