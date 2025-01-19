@@ -58,7 +58,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'Bazar_shop_db',
         'USER': 'postgres',
-        'PASSWORD': 'Fkbcf2014',
+        'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '5432',
     }
